@@ -17,14 +17,15 @@ Business keys cannot list storefronts (`403`), by design.
 
 ## Endpoints
 
-| Route                                    | Purpose                                                               |
-| ---------------------------------------- | --------------------------------------------------------------------- |
-| `GET /api/v1/channel/storefronts?limit=` | Active storefronts: id, slug, name, vertical, lat/lng                 |
-| `GET /api/v1/channel/storefronts/:slug`  | Business + vertical config + published theme + catalog                |
-| `GET /api/v1/channel/theme?businessId=`  | Theme only (platform) or the key's business                           |
-| `POST /api/v1/channel/quotes`            | Server-side cart price; `businessId` required for the platform key    |
-| `POST /api/v1/channel/orders`            | Place an order; `Idempotency-Key`-style `idempotencyKey` per business |
-| `GET /api/v1/channel/orders/:id`         | Not built yet — merchant/webhook status is next                       |
+| Route                                    | Purpose                                                                |
+| ---------------------------------------- | ---------------------------------------------------------------------- |
+| `GET /api/v1/channel/storefronts?limit=` | Active storefronts: id, slug, name, vertical, lat/lng                  |
+| `GET /api/v1/channel/storefronts/:slug`  | Business + vertical config + published theme + catalog                 |
+| `GET /api/v1/channel/theme?businessId=`  | Theme only (platform) or the key's business                            |
+| `POST /api/v1/channel/quotes`            | Server-side cart price; `businessId` required for the platform key     |
+| `POST /api/v1/channel/orders`            | Place an order; `Idempotency-Key`-style `idempotencyKey` per business  |
+| `GET /api/v1/channel/orders/:id`         | Status, lines and event timeline (`?businessId=` for the platform key) |
+| `POST /api/v1/channel/orders/:id/cancel` | Customer cancellation while the state machine allows it                |
 
 Only active businesses and available items appear. Prices are integer centavos.
 The client never sends a total.
@@ -73,7 +74,7 @@ order instead of creating a second one.
 
 ## Not built yet
 
-- Order status read/webhooks back to HATOD (needed for tracking screens).
-- Customer cancellation through the channel.
+- Webhooks/outbox pushing status changes to HATOD (polling the read endpoint
+  works today).
 - City/radius coverage filters on discovery.
 - 5-minute analytics rollups (currently live queries).
