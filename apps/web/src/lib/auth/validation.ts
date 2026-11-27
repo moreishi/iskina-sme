@@ -8,6 +8,7 @@ export const otpRequestSchema = z.object({
 export const otpVerifySchema = z.object({
   challengeId: z.uuid(),
   code: z.string().regex(/^\d{6}$/, 'Enter the 6-digit code'),
+  client: z.enum(['mobile']).optional(),
 })
 
 export const onboardingSchema = z.object({

@@ -46,7 +46,13 @@ pnpm db:migrate
 pnpm db:seed
 pnpm dev              # web on :3008
 pnpm lint && pnpm typecheck && pnpm test
+
+cd apps/merchant
+flutter pub get
+flutter analyze && flutter test
 ```
+
+Android builds need a JDK 17 + Android SDK; analyze/test do not.
 
 ## 4. Non-negotiable rules
 
@@ -94,6 +100,9 @@ packages/
 
 - Channel (HATOD): bearer `sk_test_`/`sk_live_`, scoped per business.
 - Merchant app: staff session (OTP delegated to `iskina-otp`).
+- Mobile auth: `POST /api/v1/auth/verify` with `client: "mobile"` returns a
+  `sessionToken`; the Flutter app sends it as `Authorization: Bearer`. The web
+  keeps the HttpOnly cookie, and a channel `sk_` key is never a session.
 - Catalog: `/api/v1/catalog*`; owners and managers write, staff read. Prices are
   integer centavos and a category must belong to the same business as the item.
 - Orders: `/api/v1/channel/quotes` (`catalog:read`) and `/channel/orders`
@@ -129,8 +138,10 @@ aggregates, and every query runs in tenant context.
 
 ## 9. Current milestone
 
-M4 shipped — theme editor, immutable published versions, and
-`GET /api/v1/channel/theme` for HATOD. Next: M4b Flutter merchant app.
+M4b shipped — Flutter merchant app (login, board with SSE, insights, settings)
+plus the Kotlin alert-service bridge. FCM needs the Firebase project and
+`google-services.json`; the API seam is ready. Next: M5 HATOD channel
+integration.
 
 ## 10. Coolify
 

@@ -7,7 +7,7 @@ import {
   revokeSessionByHash,
   type User,
 } from '@iskina/db'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 
 export const SESSION_COOKIE = 'iskina_sme_session'
 const DEFAULT_TTL_DAYS = 30
@@ -55,9 +55,21 @@ export async function clearSessionCookie(): Promise<void> {
   jar.set(SESSION_COOKIE, '', { httpOnly: true, path: '/', maxAge: 0 })
 }
 
+/** Bearer sessions are for the Flutter app; channel keys are not sessions. */
+export function bearerSessionToken(header: string | null): string | null {
+  if (!header?.startsWith('Bearer ')) return null
+  const token = header.slice('Bearer '.length).trim()
+  if (!token || token.startsWith('sk_')) return null
+  return token
+}
+
 async function sessionToken(): Promise<string | null> {
   const jar = await cookies()
-  return jar.get(SESSION_COOKIE)?.value ?? null
+  const cookie = jar.get(SESSION_COOKIE)?.value
+  if (cookie) return cookie
+
+  const requestHeaders = await headers()
+  return bearerSessionToken(requestHeaders.get('authorization'))
 }
 
 export async function currentSession(): Promise<SessionContext | null> {

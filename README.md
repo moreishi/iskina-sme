@@ -9,10 +9,9 @@ execution to its own dispatch.
 
 ## Status
 
-**M4 — versioned storefront themes.** OTP auth, RLS tenancy, catalog, channel
-keys, order operations, analytics, SSE/push, and a theme editor with live
-preview, preset selection (Ember default), immutable published versions, and a
-HATOD-facing channel endpoint.
+**M4b — Flutter merchant app.** OTP auth, RLS tenancy, catalog, channel keys,
+orders, analytics, SSE/push, versioned themes, and a single runtime-branded
+Flutter app (Android-first) with a Kotlin alert-service bridge.
 
 See [`AGENTS.md`](./AGENTS.md) for the boundary, rules and roadmap.
 

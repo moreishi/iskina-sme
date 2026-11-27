@@ -17,8 +17,8 @@ const MILESTONES = [
   { id: 'M3b', title: 'Analytics API + merchant insights', state: 'shipped' },
   { id: 'M3c', title: 'SSE + push notifications', state: 'shipped' },
   { id: 'M4', title: 'Theme editor + versioned publish', state: 'shipped' },
-  { id: 'M4b', title: 'Flutter merchant app', state: 'next' },
-  { id: 'M5', title: 'HATOD channel integration', state: 'planned' },
+  { id: 'M4b', title: 'Flutter merchant app', state: 'shipped' },
+  { id: 'M5', title: 'HATOD channel integration', state: 'next' },
   { id: 'M6', title: 'Analytics dashboard + billing', state: 'planned' },
 ] as const
 

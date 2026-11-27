@@ -76,5 +76,6 @@ export async function POST(request: Request) {
     user: { id: user.id, phone: user.phone, name: user.name, email: user.email },
     memberships,
     needsOnboarding: memberships.length === 0,
+    ...(parsed.data.client === 'mobile' ? { sessionToken: session.token } : {}),
   })
 }

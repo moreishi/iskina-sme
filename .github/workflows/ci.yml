@@ -55,3 +55,16 @@ jobs:
           tags: iskina-sme:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  mobile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.7"
+          channel: stable
+          cache: true
+      - run: cd apps/merchant && flutter pub get
+      - run: cd apps/merchant && flutter analyze
+      - run: cd apps/merchant && flutter test
