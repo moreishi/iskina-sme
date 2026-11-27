@@ -2,14 +2,16 @@ import { VERTICAL_FULFILLMENT, VERTICAL_LABELS, VERTICALS } from '@iskina/contra
 import { contrastRatio, listPresets } from '@iskina/core'
 import { getDb } from '@iskina/db'
 import { sql } from 'drizzle-orm'
+import Link from 'next/link'
+import { currentSession } from '@/lib/auth/session'
 import { buildHealthResponse } from '@/lib/health'
 
 export const dynamic = 'force-dynamic'
 
 const MILESTONES = [
   { id: 'M0', title: 'Scaffold, health, migrations, CI', state: 'shipped' },
-  { id: 'M1', title: 'Tenancy, staff, onboarding, API keys', state: 'next' },
-  { id: 'M2', title: 'Catalog + vertical configs', state: 'planned' },
+  { id: 'M1', title: 'Tenancy, OTP sessions, API keys, audit', state: 'shipped' },
+  { id: 'M2', title: 'Catalog + vertical configs', state: 'next' },
   { id: 'M3', title: 'Order/booking ops, SSE, push', state: 'planned' },
   { id: 'M3b', title: 'Analytics events + rollups', state: 'planned' },
   { id: 'M4', title: 'Theme editor + versioned publish', state: 'planned' },
@@ -30,6 +32,9 @@ async function databaseStatus(): Promise<'ok' | 'error'> {
 export default async function HomePage() {
   const health = buildHealthResponse({ database: await databaseStatus() })
   const presets = listPresets()
+  const session = await currentSession()
+  const accountHref = session ? '/dashboard' : '/login'
+  const accountLabel = session ? 'Dashboard' : 'Sign in'
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-6xl flex-col gap-16 px-6 py-10 md:px-10">
@@ -47,6 +52,12 @@ export default async function HomePage() {
           </div>
         </div>
         <div className="flex items-center gap-2 text-sm">
+          <Link
+            href={accountHref}
+            className="rounded-full border border-[var(--outline)] px-3 py-1 font-medium hover:border-[var(--primary)]"
+          >
+            {accountLabel}
+          </Link>
           <span className="rounded-full border border-[var(--outline)] px-3 py-1 font-medium">
             M0
           </span>

@@ -120,7 +120,10 @@ HATOD channel lands.
 
 ## 9. Current milestone
 
-M0 — scaffold, health, migrations, CI, Coolify deploy. Next: M1 tenancy and auth.
+M1 shipped — tenancy, OTP sessions, onboarding, channel keys, audit.
+**M1b next:** RLS policies plus a non-superuser `app` role. Repository isolation
+is enforced today and tested; the database wall is not yet active, so do not
+claim it is.
 
 ## 10. Coolify
 

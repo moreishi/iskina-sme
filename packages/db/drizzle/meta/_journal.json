@@ -8,6 +8,13 @@
       "when": 1795748943437,
       "tag": "0000_kind_stick",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1795749766117,
+      "tag": "0001_military_whirlwind",
+      "breakpoints": true
     }
   ]
 }

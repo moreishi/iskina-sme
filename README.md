@@ -9,8 +9,11 @@ execution to its own dispatch.
 
 ## Status
 
-**M0 — scaffold complete.** Postgres, migrations, health check, theme presets and
-their WCAG guards are in place. Tenancy/auth (M1) is next.
+**M1 — tenancy and auth complete.** Owners sign in with OTP (delegated to
+`iskina-otp`, local dev codes outside production), onboarding creates a tenant +
+business + owner membership, and HATOD channel keys are issued and revoked from
+the dashboard with an audit trail. RLS policies (the second isolation wall) land
+in M1b.
 
 See [`AGENTS.md`](./AGENTS.md) for the boundary, rules and roadmap.
 
@@ -96,7 +99,8 @@ immutable version.
 | #   | Deliverable                                                       |
 | --- | ----------------------------------------------------------------- |
 | M0  | Scaffold, AGENTS.md, Docker, migrations, CI, `/api/health`        |
-| M1  | Tenancy, owners/staff, onboarding, API keys + scopes, audit       |
+| M1  | Tenancy, owners/staff, OTP sessions, API keys + scopes, audit     |
+| M1b | RLS policies + non-superuser app role                             |
 | M2  | Catalog + vertical configs (food, aircon, LPG)                    |
 | M3  | Order/booking ops: state machines, board API, SSE, push, webhooks |
 | M3b | Analytics events + idempotent 5-min rollups + summary API         |
