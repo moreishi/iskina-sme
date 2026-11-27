@@ -9,9 +9,10 @@ execution to its own dispatch.
 
 ## Status
 
-**M4b — Flutter merchant app.** OTP auth, RLS tenancy, catalog, channel keys,
-orders, analytics, SSE/push, versioned themes, and a single runtime-branded
-Flutter app (Android-first) with a Kotlin alert-service bridge.
+**M5a — HATOD channel surface.** OTP auth, RLS tenancy, catalog, keys, orders,
+analytics, SSE/push, themes, the Flutter merchant app, and a platform-key channel
+API for HATOD: storefront discovery, storefront payload with catalog + theme,
+quotes and idempotent orders.
 
 See [`AGENTS.md`](./AGENTS.md) for the boundary, rules and roadmap.
 
@@ -113,5 +114,6 @@ immutable version.
 | M4  | Theme manifest, editor, presets, versioned publish                |
 | M4b | Flutter merchant app: auth, board, Insights, Kotlin services      |
 | M5  | HATOD channel: discovery, theme, quote, checkout, status sync     |
+| M5b | HATOD adapter behind `MARKETPLACE_BACKEND` + staging parity       |
 | M6  | Full analytics dashboard, CSV, commission/billing                 |
 | M7  | Hardening, iOS parity                                             |

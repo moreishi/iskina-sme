@@ -2,7 +2,6 @@ import type { VerticalConfig } from '@iskina/contracts'
 import { haversineKm, mergeVerticalConfig, quoteOrder } from '@iskina/core'
 import { getBusinessForTenant, getItemsByIds } from '@iskina/db'
 import { apiError } from '@/lib/api'
-import type { ChannelAuth } from '@/lib/auth/channel'
 
 export interface PricedLine {
   itemId: string
@@ -12,10 +11,12 @@ export interface PricedLine {
 }
 
 export interface PricedOrder {
+  tenantId: string
   businessId: string
   businessName: string
   businessSlug: string
   vertical: 'food' | 'aircon' | 'lpg'
+  timezone: string
   config: VerticalConfig
   lines: PricedLine[]
   subtotalCentavos: number
@@ -36,27 +37,19 @@ type DeliveryInput =
   | undefined
 
 export async function priceChannelOrder(input: {
-  auth: ChannelAuth
-  businessId?: string | null
+  tenantId: string
+  businessId: string
   items: ItemInput[]
   delivery?: DeliveryInput
 }): Promise<PricedOrder | Response> {
-  const businessId = input.auth.businessId ?? input.businessId
-  if (!businessId) {
-    return apiError(400, 'invalid_request', 'businessId is required for tenant-wide keys')
-  }
-  if (input.auth.businessId && input.businessId && input.auth.businessId !== input.businessId) {
-    return apiError(403, 'forbidden', 'This key is scoped to a different business')
-  }
-
-  const business = await getBusinessForTenant(input.auth.tenantId, businessId)
+  const business = await getBusinessForTenant(input.tenantId, input.businessId)
   if (!business) return apiError(404, 'not_found', 'Business not found')
   if (business.status !== 'active') {
     return apiError(409, 'business_inactive', 'This business is not accepting orders')
   }
 
   const ids = [...new Set(input.items.map((item) => item.itemId))]
-  const catalogItems = await getItemsByIds(input.auth.tenantId, businessId, ids)
+  const catalogItems = await getItemsByIds(input.tenantId, input.businessId, ids)
   const byId = new Map(catalogItems.map((item) => [item.id, item]))
 
   const lines: PricedLine[] = []
@@ -91,10 +84,12 @@ export async function priceChannelOrder(input: {
   const quote = quoteOrder({ lines, config, distanceKm })
 
   return {
-    businessId,
+    tenantId: input.tenantId,
+    businessId: business.id,
     businessName: business.name,
     businessSlug: business.slug,
     vertical: business.vertical,
+    timezone: business.timezone,
     config,
     lines,
     ...quote,

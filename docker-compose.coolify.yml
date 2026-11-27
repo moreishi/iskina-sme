@@ -61,6 +61,7 @@ services:
       ISKINA_OTP_BASE_URL: ${ISKINA_OTP_BASE_URL:-}
       ISKINA_OTP_API_KEY: ${ISKINA_OTP_API_KEY:-}
       FCM_SERVER_KEY: ${FCM_SERVER_KEY:-}
+      CHANNEL_PLATFORM_KEY: ${CHANNEL_PLATFORM_KEY:-}
     expose:
       - "3000"
     depends_on:

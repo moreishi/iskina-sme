@@ -3,6 +3,7 @@ import { buildThemeManifest, DEFAULT_PRESET_ID, validateThemeManifest } from '@i
 import { getBusinessForTenant, getPublishedTheme } from '@iskina/db'
 import { apiError, apiJson } from '@/lib/api'
 import { authenticateChannel, isResponse } from '@/lib/auth/channel'
+import { resolveChannelScope } from '@/lib/channel/scope'
 
 export const dynamic = 'force-dynamic'
 
@@ -11,14 +12,17 @@ export async function GET(request: Request) {
   const auth = await authenticateChannel(request, 'themes:read')
   if (isResponse(auth)) return auth
 
-  if (!auth.businessId) {
-    return apiError(400, 'business_scoped_key_required', 'Use a business-scoped key')
-  }
+  const url = new URL(request.url)
+  const scope = await resolveChannelScope(
+    auth,
+    url.searchParams.get('businessId') ?? auth.businessId,
+  )
+  if (isResponse(scope)) return scope
 
-  const business = await getBusinessForTenant(auth.tenantId, auth.businessId)
+  const business = await getBusinessForTenant(scope.tenantId, scope.businessId)
   if (!business) return apiError(404, 'not_found', 'Business not found')
 
-  const published = await getPublishedTheme(auth.tenantId, auth.businessId)
+  const published = await getPublishedTheme(scope.tenantId, scope.businessId)
   if (published) {
     const parsed = themeManifestSchema.safeParse(published.manifest)
     if (parsed.success && validateThemeManifest(parsed.data).ok) {

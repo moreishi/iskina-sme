@@ -64,6 +64,9 @@ beforeAll(async () => {
   await admin.query(
     `grant select, insert, update, delete on all tables in schema public to ${role}`,
   )
+  await admin.query(
+    `grant execute on function storefront_directory(integer), storefront_by_slug(text), storefront_by_id(uuid) to ${role}`,
+  )
 
   await admin.query(
     `insert into tenants (id, name, slug) values ($1, 'RLS A', $2), ($3, 'RLS B', $4)`,
@@ -240,6 +243,21 @@ describe('row level security', () => {
       return result.rows as { id: string }[]
     })
     expect(rows.map((row) => row.id)).toEqual([themeA])
+  })
+
+  it('exposes active storefronts only through the definer functions', async () => {
+    const byId = await probe.query('select id, tenant_id, name, slug from storefront_by_id($1)', [
+      businessA,
+    ])
+    expect(byId.rows[0]).toMatchObject({
+      id: businessA,
+      tenant_id: tenantA,
+      name: 'Business A',
+    })
+
+    const directory = await probe.query('select id from storefront_directory(50)')
+    const ids = (directory.rows as { id: string }[]).map((row) => row.id)
+    expect(ids).toContain(businessA)
   })
 
   it('blocks writes outside the tenant context', async () => {

@@ -1,5 +1,6 @@
 import { apiError, apiJson, readJson } from '@/lib/api'
 import { authenticateChannel, isResponse } from '@/lib/auth/channel'
+import { resolveChannelScope } from '@/lib/channel/scope'
 import { priceChannelOrder } from '@/lib/orders/channel'
 import { channelQuoteSchema } from '@/lib/orders/validation'
 
@@ -14,9 +15,12 @@ export async function POST(request: Request) {
     return apiError(400, 'invalid_request', parsed.error.issues[0]?.message ?? 'Invalid cart')
   }
 
+  const scope = await resolveChannelScope(auth, parsed.data.businessId)
+  if (isResponse(scope)) return scope
+
   const priced = await priceChannelOrder({
-    auth,
-    businessId: parsed.data.businessId,
+    tenantId: scope.tenantId,
+    businessId: scope.businessId,
     items: parsed.data.items,
     delivery: parsed.data.delivery,
   })

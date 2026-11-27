@@ -2,6 +2,7 @@ import { orderKindFor } from '@iskina/core'
 import { createOrder, findOrderByIdempotencyKey, getOrderById, recordAudit } from '@iskina/db'
 import { apiError, apiJson, clientIp, readJson, userAgent } from '@/lib/api'
 import { authenticateChannel, isResponse } from '@/lib/auth/channel'
+import { resolveChannelScope } from '@/lib/channel/scope'
 import { priceChannelOrder } from '@/lib/orders/channel'
 import { makeOrderNumber } from '@/lib/orders/number'
 import { channelQuoteSchema } from '@/lib/orders/validation'
@@ -21,23 +22,21 @@ export async function POST(request: Request) {
     return apiError(400, 'invalid_customer', 'A customer phone is required')
   }
 
-  const businessId = auth.businessId ?? parsed.data.businessId
-  if (!businessId) {
-    return apiError(400, 'invalid_request', 'businessId is required for tenant-wide keys')
-  }
+  const scope = await resolveChannelScope(auth, parsed.data.businessId)
+  if (isResponse(scope)) return scope
 
   if (parsed.data.idempotencyKey) {
     const existing = await findOrderByIdempotencyKey(
-      auth.tenantId,
-      businessId,
+      scope.tenantId,
+      scope.businessId,
       parsed.data.idempotencyKey,
     )
     if (existing) return apiJson({ order: existing.order, lines: existing.lines }, 200)
   }
 
   const priced = await priceChannelOrder({
-    auth,
-    businessId,
+    tenantId: scope.tenantId,
+    businessId: scope.businessId,
     items: parsed.data.items,
     delivery: parsed.data.delivery,
   })
@@ -59,8 +58,8 @@ export async function POST(request: Request) {
   }
 
   const created = await createOrder({
-    tenantId: auth.tenantId,
-    businessId,
+    tenantId: scope.tenantId,
+    businessId: scope.businessId,
     customer: {
       name: parsed.data.customer.name ?? null,
       phone: parsed.data.customer.phone,
@@ -90,10 +89,10 @@ export async function POST(request: Request) {
     })),
   })
 
-  const full = await getOrderById(auth.tenantId, businessId, created.order.id)
+  const full = await getOrderById(scope.tenantId, scope.businessId, created.order.id)
 
   await notifyBusiness(
-    { tenantId: auth.tenantId, businessId },
+    { tenantId: scope.tenantId, businessId: scope.businessId },
     {
       title: 'New order',
       body: `${created.order.number} · PHP ${(created.order.totalCentavos / 100).toFixed(2)}`,
@@ -102,14 +101,14 @@ export async function POST(request: Request) {
   ).catch(() => undefined)
 
   await recordAudit({
-    tenantId: auth.tenantId,
+    tenantId: scope.tenantId,
     actorType: 'api_key',
     actorId: auth.keyId,
     action: 'order.placed',
     entityType: 'order',
     entityId: created.order.id,
     metadata: {
-      businessId,
+      businessId: scope.businessId,
       channel: 'hatod',
       totalCentavos: created.order.totalCentavos,
     },

@@ -99,6 +99,9 @@ packages/
 ## 6. API contracts
 
 - Channel (HATOD): bearer `sk_test_`/`sk_live_`, scoped per business.
+- Platform channel: `CHANNEL_PLATFORM_KEY` (server env, constant-time compare)
+  unlocks `/api/v1/channel/storefronts*` and cross-business quotes/orders. It is
+  never stored or returned. Business keys cannot list storefronts.
 - Merchant app: staff session (OTP delegated to `iskina-otp`).
 - Mobile auth: `POST /api/v1/auth/verify` with `client: "mobile"` returns a
   `sessionToken`; the Flutter app sends it as `Authorization: Bearer`. The web
@@ -138,10 +141,10 @@ aggregates, and every query runs in tenant context.
 
 ## 9. Current milestone
 
-M4b shipped — Flutter merchant app (login, board with SSE, insights, settings)
-plus the Kotlin alert-service bridge. FCM needs the Firebase project and
-`google-services.json`; the API seam is ready. Next: M5 HATOD channel
-integration.
+M5a shipped — platform channel key, storefront discovery, storefront payload
+(catalog + theme), and cross-business quotes/orders. See
+`docs/hatod-channel.md`. Next: M5b, the HATOD adapter behind
+`MARKETPLACE_BACKEND`, then parity in staging.
 
 ## 10. Coolify
 
