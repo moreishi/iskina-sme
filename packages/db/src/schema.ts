@@ -36,6 +36,7 @@ export const orderStatus = pgEnum('order_status', [
 ])
 export const orderChannel = pgEnum('order_channel', ['hatod', 'merchant', 'manual'])
 export const orderActor = pgEnum('order_actor', ['customer', 'merchant', 'rider', 'system'])
+export const devicePlatform = pgEnum('device_platform', ['android', 'ios', 'web'])
 
 const timestamps = {
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
@@ -336,6 +337,29 @@ export const orderEvents = pgTable(
   ],
 )
 
+export const deviceTokens = pgTable(
+  'device_tokens',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    businessId: uuid('business_id')
+      .notNull()
+      .references(() => businesses.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id').references(() => users.id, { onDelete: 'set null' }),
+    platform: devicePlatform('platform').notNull(),
+    token: text('token').notNull(),
+    lastSeenAt: timestamp('last_seen_at', { withTimezone: true }).defaultNow().notNull(),
+    revokedAt: timestamp('revoked_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [
+    uniqueIndex('device_tokens_token_uq').on(t.token),
+    index('device_tokens_business_idx').on(t.businessId),
+  ],
+)
+
 export const auditLogs = pgTable(
   'audit_logs',
   {
@@ -369,4 +393,5 @@ export type Customer = typeof customers.$inferSelect
 export type Order = typeof orders.$inferSelect
 export type OrderLine = typeof orderLines.$inferSelect
 export type OrderEvent = typeof orderEvents.$inferSelect
+export type DeviceToken = typeof deviceTokens.$inferSelect
 export type AuditLog = typeof auditLogs.$inferSelect

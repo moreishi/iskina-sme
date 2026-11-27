@@ -120,9 +120,17 @@ export function OrdersBoard({
   }, [businessId])
 
   useEffect(() => {
-    const timer = setInterval(() => void load(), 5000)
+    const timer = setInterval(() => void load(), 30000)
     return () => clearInterval(timer)
   }, [load])
+
+  useEffect(() => {
+    const source = new EventSource(
+      `/api/v1/merchant/events?businessId=${encodeURIComponent(businessId)}`,
+    )
+    source.addEventListener('orders', () => void load())
+    return () => source.close()
+  }, [businessId, load])
 
   async function transition(order: BoardOrder, to: Status) {
     setBusyId(order.id)
@@ -192,7 +200,7 @@ export function OrdersBoard({
             </button>
           ))}
         </div>
-        <p className="text-xs text-[var(--muted-text)]">Live board · refreshes every 5s</p>
+        <p className="text-xs text-[var(--muted-text)]">Live via SSE · 30s fallback poll</p>
       </div>
 
       {error ? (

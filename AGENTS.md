@@ -125,8 +125,9 @@ aggregates, and every query runs in tenant context.
 
 ## 9. Current milestone
 
-M3b shipped — analytics API and merchant insights (live queries, not rollups).
-Next: M3c SSE/push, then M4 theme editor.
+M3c shipped — SSE order stream for the board and device registration with an
+FCM provider seam (`FCM_SERVER_KEY`; unset logs and skips). Next: M4 theme
+editor and versioned publish.
 
 ## 10. Coolify
 

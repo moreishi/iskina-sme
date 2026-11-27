@@ -60,6 +60,7 @@ services:
       THEME_DEFAULT_PRESET: ${THEME_DEFAULT_PRESET:-alibaba}
       ISKINA_OTP_BASE_URL: ${ISKINA_OTP_BASE_URL:-}
       ISKINA_OTP_API_KEY: ${ISKINA_OTP_API_KEY:-}
+      FCM_SERVER_KEY: ${FCM_SERVER_KEY:-}
     expose:
       - "3000"
     depends_on:

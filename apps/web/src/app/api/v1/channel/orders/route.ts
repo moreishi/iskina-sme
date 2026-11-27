@@ -5,6 +5,7 @@ import { authenticateChannel, isResponse } from '@/lib/auth/channel'
 import { priceChannelOrder } from '@/lib/orders/channel'
 import { makeOrderNumber } from '@/lib/orders/number'
 import { channelQuoteSchema } from '@/lib/orders/validation'
+import { notifyBusiness } from '@/lib/push'
 
 export const dynamic = 'force-dynamic'
 
@@ -90,6 +91,15 @@ export async function POST(request: Request) {
   })
 
   const full = await getOrderById(auth.tenantId, businessId, created.order.id)
+
+  await notifyBusiness(
+    { tenantId: auth.tenantId, businessId },
+    {
+      title: 'New order',
+      body: `${created.order.number} · PHP ${(created.order.totalCentavos / 100).toFixed(2)}`,
+      data: { orderId: created.order.id, status: created.order.status },
+    },
+  ).catch(() => undefined)
 
   await recordAudit({
     tenantId: auth.tenantId,

@@ -9,10 +9,9 @@ execution to its own dispatch.
 
 ## Status
 
-**M3b — merchant analytics.** OTP auth, RLS tenancy, catalog, channel keys,
-order operations, and a merchant insights surface: GMV, orders, AOV, net sales,
-acceptance, prep/fulfillment percentiles, daily series, top items and peak hours,
-with business-timezone day boundaries and previous-period deltas.
+**M3c — realtime and push.** OTP auth, RLS tenancy, catalog, channel keys,
+order operations, merchant analytics, and now an SSE order stream plus device
+token registration with an FCM seam for the merchant app.
 
 See [`AGENTS.md`](./AGENTS.md) for the boundary, rules and roadmap.
 

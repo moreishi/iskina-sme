@@ -50,6 +50,20 @@
       "when": 1795751157607,
       "tag": "0006_orders_rls",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1795751864020,
+      "tag": "0007_quiet_morgan_stark",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1795751864483,
+      "tag": "0008_devices_rls",
+      "breakpoints": true
     }
   ]
 }
