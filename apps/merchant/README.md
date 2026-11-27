@@ -52,6 +52,34 @@ android/       Kotlin platform bridge + OrderAlertService
 - Tests cover the SSE decoder, order action map and theme mapping; no widget or
   integration tests yet.
 
+## Local debug build
+
+Debug builds point at your machine through `adb reverse`, so no LAN or firewall
+setup is needed:
+
+```bash
+# host
+pnpm dev
+
+# per connected device
+adb -s <serial> reverse tcp:3008 tcp:3008
+
+cd apps/merchant
+flutter build apk --debug --dart-define=API_URL=http://127.0.0.1:3008
+adb -s <serial> install -r build/app/outputs/flutter-apk/app-debug.apk
+```
+
+The dev OTP is shown on the login screen because the API runs outside production.
+Release builds must use the HTTPS domain.
+
+On MIUI, `adb install` may return `INSTALL_FAILED_USER_RESTRICTED` even with
+Developer options enabled. This works instead:
+
+```bash
+adb -s <serial> push build/app/outputs/flutter-apk/app-debug.apk /data/local/tmp/iskina-debug.apk
+adb -s <serial> shell pm install -r /data/local/tmp/iskina-debug.apk
+```
+
 ## Release builds
 
 Icons come from `assets/icon/`:
