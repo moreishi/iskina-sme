@@ -120,10 +120,9 @@ HATOD channel lands.
 
 ## 9. Current milestone
 
-M1 shipped — tenancy, OTP sessions, onboarding, channel keys, audit.
-**M1b next:** RLS policies plus a non-superuser `app` role. Repository isolation
-is enforced today and tested; the database wall is not yet active, so do not
-claim it is.
+M1b shipped — tenancy, OTP sessions, onboarding, channel keys, audit, and RLS
+enforced through the non-superuser `iskina_app` role. Next: M2 catalog and
+vertical configs.
 
 ## 10. Coolify
 

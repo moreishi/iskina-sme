@@ -9,11 +9,12 @@ execution to its own dispatch.
 
 ## Status
 
-**M1 — tenancy and auth complete.** Owners sign in with OTP (delegated to
+**M1b — tenancy, auth and RLS complete.** Owners sign in with OTP (delegated to
 `iskina-otp`, local dev codes outside production), onboarding creates a tenant +
 business + owner membership, and HATOD channel keys are issued and revoked from
-the dashboard with an audit trail. RLS policies (the second isolation wall) land
-in M1b.
+the dashboard with an audit trail. The app connects as a non-superuser
+`iskina_app` role, so row-level security is enforced in development and
+production, not just in tests.
 
 See [`AGENTS.md`](./AGENTS.md) for the boundary, rules and roadmap.
 
@@ -36,10 +37,17 @@ Requirements: Node 24+, pnpm 12+, Docker.
 ```bash
 pnpm install
 cp .env.example .env
-pnpm db:up            # Postgres on localhost:5437
+pnpm db:up            # Postgres on localhost:5437 + non-superuser app role
 pnpm db:migrate
 pnpm db:seed          # demo tenant: Aling Nena's
 pnpm dev              # http://localhost:3008
+```
+
+The database is only initialised once per volume. If you are coming from an
+older checkout, reset the local volume so `db/init` can create `iskina_app`:
+
+```bash
+docker compose down -v && pnpm db:up
 ```
 
 Check the service:
@@ -71,6 +79,7 @@ Local smoke test of the production stack:
 
 ```bash
 AUTH_SECRET=dev-only-secret APP_URL=http://localhost:3008 POSTGRES_PASSWORD=iskina \
+  DB_APP_PASSWORD=iskina_app \
   docker compose -f docker-compose.coolify.yml -f docker-compose.coolify.local.yml up --build
 ```
 

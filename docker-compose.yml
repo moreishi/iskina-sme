@@ -7,10 +7,13 @@ services:
       POSTGRES_USER: iskina
       POSTGRES_PASSWORD: iskina
       POSTGRES_DB: iskina_sme
+      DB_APP_USER: ${DB_APP_USER:-iskina_app}
+      DB_APP_PASSWORD: ${DB_APP_PASSWORD:-iskina_app}
     ports:
       - "5437:5432"
     volumes:
       - iskina-sme-pgdata:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U iskina -d iskina_sme"]
       interval: 3s

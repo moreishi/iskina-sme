@@ -11,6 +11,7 @@ export const dynamic = 'force-dynamic'
 const MILESTONES = [
   { id: 'M0', title: 'Scaffold, health, migrations, CI', state: 'shipped' },
   { id: 'M1', title: 'Tenancy, OTP sessions, API keys, audit', state: 'shipped' },
+  { id: 'M1b', title: 'RLS policies + non-superuser app role', state: 'shipped' },
   { id: 'M2', title: 'Catalog + vertical configs', state: 'next' },
   { id: 'M3', title: 'Order/booking ops, SSE, push', state: 'planned' },
   { id: 'M3b', title: 'Analytics events + rollups', state: 'planned' },

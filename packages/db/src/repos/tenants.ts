@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { sql } from 'drizzle-orm'
 import { getDb } from '../client'
 import { auditLogs, type Business, businesses, memberships, type Tenant, tenants } from '../schema'
@@ -25,9 +26,14 @@ export interface CreatedTenant {
 export async function createTenantWithOwner(input: CreateTenantInput): Promise<CreatedTenant> {
   const db = getDb()
   return db.transaction(async (tx) => {
+    const tenantId = randomUUID()
+    // Set tenant context before inserting so the tenants RLS WITH CHECK passes.
+    await tx.execute(sql`select set_config('app.tenant_id', ${tenantId}, true)`)
+
     const tenantRows = await tx
       .insert(tenants)
       .values({
+        id: tenantId,
         name: input.tenantName?.trim() || input.businessName.trim(),
         slug: input.slug,
         timezone: input.timezone ?? 'Asia/Manila',
@@ -35,8 +41,6 @@ export async function createTenantWithOwner(input: CreateTenantInput): Promise<C
       .returning()
     const tenant = tenantRows[0]
     if (!tenant) throw new Error('tenant insert returned no row')
-
-    await tx.execute(sql`select set_config('app.tenant_id', ${tenant.id}, true)`)
 
     const businessRows = await tx
       .insert(businesses)

@@ -10,8 +10,11 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-iskina}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB:-iskina_sme}
+      DB_APP_USER: ${DB_APP_USER:-iskina_app}
+      DB_APP_PASSWORD: ${DB_APP_PASSWORD:?set DB_APP_PASSWORD}
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
@@ -24,7 +27,7 @@ services:
       dockerfile: Dockerfile
       target: migrate
     environment:
-      DATABASE_URL: postgres://${POSTGRES_USER:-iskina}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-iskina_sme}
+      DATABASE_URL: postgres://${DB_APP_USER:-iskina_app}:${DB_APP_PASSWORD}@postgres:5432/${POSTGRES_DB:-iskina_sme}
       SEED_DEMO_DATA: ${SEED_DEMO_DATA:-false}
     command:
       - sh
@@ -47,11 +50,12 @@ services:
       NODE_ENV: production
       PORT: "3000"
       HOSTNAME: 0.0.0.0
-      DATABASE_URL: postgres://${POSTGRES_USER:-iskina}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-iskina_sme}
+      DATABASE_URL: postgres://${DB_APP_USER:-iskina_app}:${DB_APP_PASSWORD}@postgres:5432/${POSTGRES_DB:-iskina_sme}
       APP_URL: ${APP_URL:?set APP_URL to the public https URL}
       NEXT_PUBLIC_APP_URL: ${APP_URL}
       AUTH_SECRET: ${AUTH_SECRET:?set AUTH_SECRET (openssl rand -hex 32)}
       AUTH_EXPOSE_DEV_OTP: ${AUTH_EXPOSE_DEV_OTP:-false}
+      AUTH_ALLOW_DEV_OTP: ${AUTH_ALLOW_DEV_OTP:-false}
       SESSION_TTL_DAYS: ${SESSION_TTL_DAYS:-30}
       THEME_DEFAULT_PRESET: ${THEME_DEFAULT_PRESET:-alibaba}
       ISKINA_OTP_BASE_URL: ${ISKINA_OTP_BASE_URL:-}

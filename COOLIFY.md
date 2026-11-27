@@ -26,9 +26,26 @@ Copy [`.env.coolify.example`](./.env.coolify.example) into the resource.
 Required:
 
 ```dotenv
-POSTGRES_PASSWORD=...            # alphanumeric
+POSTGRES_PASSWORD=...            # superuser, init only
+DB_APP_PASSWORD=...              # app role, alphanumeric
 APP_URL=https://your-domain      # domain attached to the web service
 AUTH_SECRET=...                  # openssl rand -hex 32
+```
+
+`db/init/01-app-role.sh` creates the non-superuser `iskina_app` role on a fresh
+volume, makes it the owner of the database and `public` schema, and migrations
+run as that role. Ownership plus `FORCE ROW LEVEL SECURITY` is what makes the
+policies apply to the app itself.
+
+### Upgrading a database created before M1b
+
+Init scripts only run on a fresh volume. On an existing database, run the
+equivalent once as the superuser, then set `DB_APP_PASSWORD` and redeploy:
+
+```sql
+create role iskina_app login password '<password>' nosuperuser nobypassrls;
+alter database iskina_sme owner to iskina_app;
+alter schema public owner to iskina_app;
 ```
 
 Optional:
@@ -72,7 +89,10 @@ The stack includes its own Postgres for one-click deploys. To use Coolify's
 database resource instead:
 
 1. Remove the `postgres` service and the `depends_on` / `pgdata` references.
-2. Set `DATABASE_URL` in the `web` and `migrate` services to the managed
+2. Create a non-superuser role and make it own the database and schema
+   (`db/init/01-app-role.sh` shows the exact SQL). RLS is not enforced for
+   superusers or table owners without `FORCE`, so this step is required.
+3. Set `DATABASE_URL` in the `web` and `migrate` services to that role's
    connection string.
 
 ## 6. Backups and updates
@@ -87,6 +107,7 @@ database resource instead:
 
 ```bash
 AUTH_SECRET=dev-only-secret APP_URL=http://localhost:3008 POSTGRES_PASSWORD=iskina \
+  DB_APP_PASSWORD=iskina_app \
   docker compose -f docker-compose.coolify.yml -f docker-compose.coolify.local.yml up --build
 ```
 

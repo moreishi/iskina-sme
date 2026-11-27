@@ -7,6 +7,7 @@ type OtpMode = 'iskina' | 'dev' | 'disabled'
 
 function mode(): OtpMode {
   if (process.env.ISKINA_OTP_API_KEY?.trim()) return 'iskina'
+  if (process.env.AUTH_ALLOW_DEV_OTP === 'true') return 'dev'
   return process.env.NODE_ENV === 'production' ? 'disabled' : 'dev'
 }
 

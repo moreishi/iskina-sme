@@ -12,7 +12,8 @@
     "migrate": "tsx src/migrate.ts",
     "seed": "tsx src/seed.ts",
     "studio": "drizzle-kit studio",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "dotenv": "18.0.9",
@@ -25,6 +26,7 @@
     "@types/pg": "8.23.1",
     "drizzle-kit": "0.31.11",
     "tsx": "4.23.15",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vitest": "5.0.5"
   }
 }

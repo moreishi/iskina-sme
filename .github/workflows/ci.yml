@@ -24,6 +24,7 @@ jobs:
           --health-retries 20
     env:
       DATABASE_URL: postgres://iskina:iskina@localhost:5437/iskina_sme
+      DATABASE_ADMIN_URL: postgres://iskina:iskina@localhost:5437/iskina_sme
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4

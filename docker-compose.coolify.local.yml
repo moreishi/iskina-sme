@@ -2,6 +2,7 @@
 # Do not include this file in Coolify; Coolify routes the exposed port itself.
 #
 #   AUTH_SECRET=dev-only-... APP_URL=http://localhost:3008 POSTGRES_PASSWORD=iskina \
+#     DB_APP_PASSWORD=iskina_app \
 #     docker compose -f docker-compose.coolify.yml -f docker-compose.coolify.local.yml up --build
 services:
   web:
