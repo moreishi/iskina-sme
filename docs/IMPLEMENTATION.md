@@ -10,10 +10,10 @@ HATOD integration contract lives separately in
 HATOD remains the consumer app; merchants use the web dashboard and the Flutter
 “Iskina Business” app.
 
-| System | Owns | Does not own |
-| --- | --- | --- |
-| iskina-sme | tenants, businesses, staff, catalog, vertical configs, orders/bookings, themes, analytics, channel API | rider dispatch, driver matching, consumer UX |
-| iskina-hatod | consumer app, rider/driver identity, dispatch, delivery execution, wallet | merchant catalog, MSME operations |
+| System       | Owns                                                                                                   | Does not own                                 |
+| ------------ | ------------------------------------------------------------------------------------------------------ | -------------------------------------------- |
+| iskina-sme   | tenants, businesses, staff, catalog, vertical configs, orders/bookings, themes, analytics, channel API | rider dispatch, driver matching, consumer UX |
+| iskina-hatod | consumer app, rider/driver identity, dispatch, delivery execution, wallet                              | merchant catalog, MSME operations            |
 
 HATOD reaches this service only through `/api/v1/channel/*`. Order state lives
 here; delivery execution stays in HATOD.
@@ -32,16 +32,16 @@ A modular monolith: one Next.js app, framework-free domain rules in
 
 ## 3. Stack and ports
 
-| Layer | Choice |
-| --- | --- |
-| Web/API | Next.js 16 App Router, React 19, Tailwind 4 |
-| Database | PostgreSQL 16 + Drizzle ORM (`:5437` locally) |
-| Domain | `@iskina/core` |
-| Contracts | `@iskina/contracts` (zod) |
-| Monorepo | pnpm workspaces + Turborepo, Biome |
-| Web port | `:3008` |
-| Mobile | Flutter 3.47, Kotlin platform layer |
-| Simulator | TypeScript + tsx |
+| Layer     | Choice                                        |
+| --------- | --------------------------------------------- |
+| Web/API   | Next.js 16 App Router, React 19, Tailwind 4   |
+| Database  | PostgreSQL 16 + Drizzle ORM (`:5437` locally) |
+| Domain    | `@iskina/core`                                |
+| Contracts | `@iskina/contracts` (zod)                     |
+| Monorepo  | pnpm workspaces + Turborepo, Biome            |
+| Web port  | `:3008`                                       |
+| Mobile    | Flutter 3.47, Kotlin platform layer           |
+| Simulator | TypeScript + tsx                              |
 
 ## 4. Repository layout
 
@@ -60,17 +60,17 @@ docs/           HATOD channel contract, this guide
 
 ## 5. Data model
 
-| Table | Purpose |
-| --- | --- |
-| `tenants`, `users`, `memberships` | tenancy root, identities, roles (`owner`, `manager`, `staff`) |
-| `sessions`, `otp_challenges` | hashed sessions and OTP state |
-| `api_keys` | business-scoped channel credentials |
-| `businesses` | store, vertical, timezone, lat/lng, theme/vertical overrides |
-| `catalog_categories`, `catalog_items` | menu with integer-centavo prices and `image_url` |
-| `customers`, `orders`, `order_lines`, `order_events` | order lifecycle, snapshots, append-only history |
-| `theme_versions` | immutable published manifests |
-| `device_tokens` | merchant push tokens |
-| `audit_logs` | user/API-key actions |
+| Table                                                | Purpose                                                       |
+| ---------------------------------------------------- | ------------------------------------------------------------- |
+| `tenants`, `users`, `memberships`                    | tenancy root, identities, roles (`owner`, `manager`, `staff`) |
+| `sessions`, `otp_challenges`                         | hashed sessions and OTP state                                 |
+| `api_keys`                                           | business-scoped channel credentials                           |
+| `businesses`                                         | store, vertical, timezone, lat/lng, theme/vertical overrides  |
+| `catalog_categories`, `catalog_items`                | menu with integer-centavo prices and `image_url`              |
+| `customers`, `orders`, `order_lines`, `order_events` | order lifecycle, snapshots, append-only history               |
+| `theme_versions`                                     | immutable published manifests                                 |
+| `device_tokens`                                      | merchant push tokens                                          |
+| `audit_logs`                                         | user/API-key actions                                          |
 
 RLS is enabled and forced on every tenant table. Each request opens
 `withTenant()` or `withUser()`, which sets `app.tenant_id` / `app.user_id` /
@@ -131,15 +131,15 @@ both      PLACED → REJECTED | CANCELLED | EXPIRED
 
 ## 9. Channel API (HATOD)
 
-| Route | Auth | Purpose |
-| --- | --- | --- |
-| `GET /channel/storefronts` | platform | active storefronts |
-| `GET /channel/storefronts/:slug` | platform | business + config + theme + available catalog |
-| `POST /channel/quotes` | catalog:read | server-side price |
-| `POST /channel/orders` | orders:write | place order/booking, idempotent |
-| `GET /channel/orders/:id` | orders:read | status + lines + event timeline |
-| `POST /channel/orders/:id/cancel` | orders:write | customer cancellation |
-| `GET /channel/theme` | themes:read | published theme or default preset |
+| Route                             | Auth         | Purpose                                       |
+| --------------------------------- | ------------ | --------------------------------------------- |
+| `GET /channel/storefronts`        | platform     | active storefronts                            |
+| `GET /channel/storefronts/:slug`  | platform     | business + config + theme + available catalog |
+| `POST /channel/quotes`            | catalog:read | server-side price                             |
+| `POST /channel/orders`            | orders:write | place order/booking, idempotent               |
+| `GET /channel/orders/:id`         | orders:read  | status + lines + event timeline               |
+| `POST /channel/orders/:id/cancel` | orders:write | customer cancellation                         |
+| `GET /channel/theme`              | themes:read  | published theme or default preset             |
 
 Only active businesses and available items appear. Order status changes are
 polled today; webhooks are not built.
@@ -206,16 +206,16 @@ Black-box agents against the real API; no DB writes. Remote targets require
 
 ## 15. Environment variables
 
-| Variable | Purpose |
-| --- | --- |
-| `DATABASE_URL`, `DATABASE_ADMIN_URL` | app role / test-only superuser |
-| `DB_APP_USER`, `DB_APP_PASSWORD` | init script role |
-| `AUTH_SECRET`, `AUTH_EXPOSE_DEV_OTP`, `AUTH_ALLOW_DEV_OTP`, `SESSION_TTL_DAYS` | sessions and dev OTP |
-| `ISKINA_OTP_BASE_URL`, `ISKINA_OTP_API_KEY` | OTP delegation |
-| `CHANNEL_PLATFORM_KEY` | HATOD platform credential |
-| `FCM_SERVER_KEY` | push seam |
-| `S3_*`, `UPLOAD_MAX_BYTES` | item images |
-| `THEME_DEFAULT_PRESET` | default storefront preset |
+| Variable                                                                       | Purpose                        |
+| ------------------------------------------------------------------------------ | ------------------------------ |
+| `DATABASE_URL`, `DATABASE_ADMIN_URL`                                           | app role / test-only superuser |
+| `DB_APP_USER`, `DB_APP_PASSWORD`                                               | init script role               |
+| `AUTH_SECRET`, `AUTH_EXPOSE_DEV_OTP`, `AUTH_ALLOW_DEV_OTP`, `SESSION_TTL_DAYS` | sessions and dev OTP           |
+| `ISKINA_OTP_BASE_URL`, `ISKINA_OTP_API_KEY`                                    | OTP delegation                 |
+| `CHANNEL_PLATFORM_KEY`                                                         | HATOD platform credential      |
+| `FCM_SERVER_KEY`                                                               | push seam                      |
+| `S3_*`, `UPLOAD_MAX_BYTES`                                                     | item images                    |
+| `THEME_DEFAULT_PRESET`                                                         | default storefront preset      |
 
 Secrets are never committed. `.env*` is gitignored except examples.
 
