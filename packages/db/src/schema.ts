@@ -337,6 +337,28 @@ export const orderEvents = pgTable(
   ],
 )
 
+export const themeVersions = pgTable(
+  'theme_versions',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    businessId: uuid('business_id')
+      .notNull()
+      .references(() => businesses.id, { onDelete: 'cascade' }),
+    version: integer('version').notNull(),
+    manifest: jsonb('manifest').notNull(),
+    publishedBy: uuid('published_by').references(() => users.id, { onDelete: 'set null' }),
+    publishedAt: timestamp('published_at', { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [
+    uniqueIndex('theme_versions_business_version_uq').on(t.businessId, t.version),
+    index('theme_versions_tenant_idx').on(t.tenantId),
+  ],
+)
+
 export const deviceTokens = pgTable(
   'device_tokens',
   {
@@ -394,4 +416,5 @@ export type Order = typeof orders.$inferSelect
 export type OrderLine = typeof orderLines.$inferSelect
 export type OrderEvent = typeof orderEvents.$inferSelect
 export type DeviceToken = typeof deviceTokens.$inferSelect
+export type ThemeVersion = typeof themeVersions.$inferSelect
 export type AuditLog = typeof auditLogs.$inferSelect

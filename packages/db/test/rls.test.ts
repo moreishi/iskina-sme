@@ -21,6 +21,7 @@ const itemA = randomUUID()
 const customerA = randomUUID()
 const orderA = randomUUID()
 const deviceA = randomUUID()
+const themeA = randomUUID()
 const hashA = `hash_a_${suffix}`
 const hashB = `hash_b_${suffix}`
 
@@ -113,6 +114,11 @@ beforeAll(async () => {
      values ($1, $2, $3, 'android', $4)`,
     [deviceA, tenantA, businessA, `token_${suffix}`],
   )
+  await admin.query(
+    `insert into theme_versions (id, tenant_id, business_id, version, manifest)
+     values ($1, $2, $3, 1, '{}'::jsonb)`,
+    [themeA, tenantA, businessA],
+  )
 
   probe = new Pool({ connectionString: withCredentials(adminUrl, role, password) })
 })
@@ -125,6 +131,7 @@ afterAll(async () => {
     await admin.query(`delete from orders where id = $1`, [orderA])
     await admin.query(`delete from customers where id = $1`, [customerA])
     await admin.query(`delete from device_tokens where id = $1`, [deviceA])
+    await admin.query(`delete from theme_versions where id = $1`, [themeA])
     await admin.query(`delete from catalog_items where id = $1`, [itemA])
     await admin.query(`delete from catalog_categories where id = $1`, [categoryA])
     await admin.query(`delete from api_keys where id in ($1, $2)`, [keyA, keyB])
@@ -222,6 +229,17 @@ describe('row level security', () => {
       return result.rows as { id: string }[]
     })
     expect(rows.map((row) => row.id)).toEqual([deviceA])
+  })
+
+  it('isolates theme versions by tenant', async () => {
+    const withoutContext = await probe.query('select id from theme_versions')
+    expect(withoutContext.rows).toEqual([])
+
+    const rows = await inTenant(tenantA, async (client) => {
+      const result = await client.query('select id from theme_versions')
+      return result.rows as { id: string }[]
+    })
+    expect(rows.map((row) => row.id)).toEqual([themeA])
   })
 
   it('blocks writes outside the tenant context', async () => {

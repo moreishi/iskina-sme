@@ -64,6 +64,20 @@
       "when": 1795751864483,
       "tag": "0008_devices_rls",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1795752095445,
+      "tag": "0009_nasty_infant_terrible",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1795752095840,
+      "tag": "0010_theme_versions_rls",
+      "breakpoints": true
     }
   ]
 }

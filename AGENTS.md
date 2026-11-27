@@ -114,6 +114,10 @@ packages/
   `font`: `sans | serif | rounded`.
 - HATOD and the merchant app render the same manifest natively. No webview, no
   remote code, no arbitrary CSS.
+- Publishing never mutates an old row: the server assigns the next version under
+  a business row lock, and HATOD reads the latest via `/api/v1/channel/theme`.
+- Button text (`onPrimary`, `onAccent`) is derived server-side for contrast; the
+  client cannot choose an unreadable pairing.
 
 ## 8. Analytics
 
@@ -125,9 +129,8 @@ aggregates, and every query runs in tenant context.
 
 ## 9. Current milestone
 
-M3c shipped — SSE order stream for the board and device registration with an
-FCM provider seam (`FCM_SERVER_KEY`; unset logs and skips). Next: M4 theme
-editor and versioned publish.
+M4 shipped — theme editor, immutable published versions, and
+`GET /api/v1/channel/theme` for HATOD. Next: M4b Flutter merchant app.
 
 ## 10. Coolify
 

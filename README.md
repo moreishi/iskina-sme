@@ -9,9 +9,10 @@ execution to its own dispatch.
 
 ## Status
 
-**M3c — realtime and push.** OTP auth, RLS tenancy, catalog, channel keys,
-order operations, merchant analytics, and now an SSE order stream plus device
-token registration with an FCM seam for the merchant app.
+**M4 — versioned storefront themes.** OTP auth, RLS tenancy, catalog, channel
+keys, order operations, analytics, SSE/push, and a theme editor with live
+preview, preset selection (Ember default), immutable published versions, and a
+HATOD-facing channel endpoint.
 
 See [`AGENTS.md`](./AGENTS.md) for the boundary, rules and roadmap.
 

@@ -88,6 +88,12 @@ export default async function DashboardPage() {
                   >
                     Insights
                   </Link>
+                  <Link
+                    href={`/dashboard/businesses/${membership.businessId}/theme`}
+                    className="inline-block rounded-lg border border-[var(--outline)] px-3 py-1.5 text-sm font-medium hover:border-[var(--primary)]"
+                  >
+                    Theme
+                  </Link>
                 </div>
               ) : null}
             </article>
