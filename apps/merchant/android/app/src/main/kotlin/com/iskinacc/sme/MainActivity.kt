@@ -1,4 +1,4 @@
-package ph.iskina.merchant
+package com.iskinacc.sme
 
 import android.content.Intent
 import android.os.Build
@@ -13,7 +13,7 @@ import io.flutter.plugin.common.MethodChannel
  * service and printer seam are already here so the Dart side stays stable.
  */
 class MainActivity : FlutterActivity() {
-    private val channelName = "ph.iskina.merchant/platform"
+    private val channelName = "com.iskinacc.sme/platform"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)

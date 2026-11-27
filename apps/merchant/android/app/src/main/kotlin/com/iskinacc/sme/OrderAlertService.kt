@@ -1,4 +1,4 @@
-package ph.iskina.merchant
+package com.iskinacc.sme
 
 import android.app.Notification
 import android.app.NotificationChannel

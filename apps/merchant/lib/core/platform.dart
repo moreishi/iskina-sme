@@ -2,7 +2,7 @@ import 'package:flutter/services.dart';
 
 /// Kotlin bridge. Missing on tests/desktop and safely degrades.
 class MerchantPlatform {
-  static const _channel = MethodChannel('ph.iskina.merchant/platform');
+  static const _channel = MethodChannel('com.iskinacc.sme/platform');
 
   static Future<String> deviceLabel() async {
     try {
