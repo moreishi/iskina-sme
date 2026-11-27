@@ -117,17 +117,16 @@ packages/
 
 ## 8. Analytics
 
-M3b starts the pipeline so history accrues before the dashboard ships.
-Events → idempotent 5-minute rollups → summary API. 12 months of daily history.
-V1 metrics: GMV, orders, AOV, delivery fees, top items, prep/fulfillment times,
-acceptance, cancellation/expiry, peak hours. Customers/funnel follow once the
-HATOD channel lands.
+Analytics are computed from `orders` and `order_events`, grouped by the
+business's local day (never UTC). The merchant summary API and insights page are
+live. **Rollups and 12-month materialization are not built yet** — that is M6, so
+do not describe the pipeline as a 5-minute rollup until it exists. No PII in
+aggregates, and every query runs in tenant context.
 
 ## 9. Current milestone
 
-M3 core shipped — orders and bookings, server-side pricing, channel order intake
-with idempotency, and the merchant board (polling). Next: M3b analytics pipeline,
-then SSE/push with the merchant app.
+M3b shipped — analytics API and merchant insights (live queries, not rollups).
+Next: M3c SSE/push, then M4 theme editor.
 
 ## 10. Coolify
 

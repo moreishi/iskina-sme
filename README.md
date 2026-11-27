@@ -9,11 +9,10 @@ execution to its own dispatch.
 
 ## Status
 
-**M3 core — order and booking operations.** OTP auth, tenancy with RLS, catalog
-and vertical configs, channel API keys, and now the order lifecycle: server-side
-pricing, per-vertical state machines, HATOD channel quote/order intake with
-idempotency, cash confirmation, and the merchant order board (polling). SSE and
-push arrive with the merchant app.
+**M3b — merchant analytics.** OTP auth, RLS tenancy, catalog, channel keys,
+order operations, and a merchant insights surface: GMV, orders, AOV, net sales,
+acceptance, prep/fulfillment percentiles, daily series, top items and peak hours,
+with business-timezone day boundaries and previous-period deltas.
 
 See [`AGENTS.md`](./AGENTS.md) for the boundary, rules and roadmap.
 
@@ -111,7 +110,7 @@ immutable version.
 | M1b | RLS policies + non-superuser app role                             |
 | M2  | Catalog + vertical configs (food, aircon, LPG)                    |
 | M3  | Order/booking ops: state machines, board API, SSE, push, webhooks |
-| M3b | Analytics events + idempotent 5-min rollups + summary API         |
+| M3b | Analytics API + merchant insights (live queries)                  |
 | M4  | Theme manifest, editor, presets, versioned publish                |
 | M4b | Flutter merchant app: auth, board, Insights, Kotlin services      |
 | M5  | HATOD channel: discovery, theme, quote, checkout, status sync     |

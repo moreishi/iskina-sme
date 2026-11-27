@@ -1,5 +1,6 @@
 export * from './client'
 export * from './context'
+export * from './repos/analytics'
 export * from './repos/api-keys'
 export * from './repos/audit'
 export * from './repos/auth'
