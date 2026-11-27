@@ -32,10 +32,33 @@ refuses to continue if the API does not return a dev code.
 | `pnpm sim:failures`                           | cancel, double-cancel 409, late-cancel 409, invalid transition 409, idempotent replay, reject        |
 | `pnpm sim:mixed --orders=20 --concurrency=5`  | concurrent orders across all three verticals, fully processed                                        |
 | `pnpm sim:load --orders=100 --concurrency=10` | latency p50/p95, throughput, error count                                                             |
+| `pnpm sim:traffic --duration=10m --rate=2`    | continuous random orders, timing, failures and idempotent replays                                    |
 | `pnpm sim:replay sim-reports/<file>.json`     | re-run a recorded scenario                                                                           |
 
 Reports are written to `sim-reports/` (gitignored). Tokens, OTPs and the platform
 key are never written to a report.
+
+## Traffic options
+
+```bash
+pnpm sim:traffic --duration=10m --rate=2 --failure-rate=0.1
+pnpm sim:traffic --orders=50 --business=aling-nena --step-delay=250
+pnpm sim:traffic --vertical=aircon --seed=42 --concurrency=3
+```
+
+| Flag                                  | Meaning                                                    |
+| ------------------------------------- | ---------------------------------------------------------- |
+| `--duration=10m` / `--orders=N`       | stop after a window or a count                             |
+| `--rate=2`                            | orders per second (jittered)                               |
+| `--vertical=food\|aircon\|lpg\|mixed` | cart mix                                                   |
+| `--failure-rate=0.1`                  | share that rejects, cancels, or hits a blocked late cancel |
+| `--business=<slug>`                   | target an existing store instead of the SIM stores         |
+| `--step-delay=500`                    | ms between merchant transitions                            |
+| `--seed=42`                           | reproducible randomness                                    |
+
+Each order gets a random cart, quantity, customer, drop-off point, and a future
+slot for bookings. About 5% are duplicate `idempotencyKey` placements, which must
+return the same order.
 
 ## Safety
 

@@ -76,6 +76,7 @@ pnpm sim:lpg
 pnpm sim:failures
 pnpm sim:mixed --orders=20 --concurrency=5
 pnpm sim:load  --orders=100 --concurrency=10
+pnpm sim:traffic --duration=10m --rate=2 --failure-rate=0.1
 pnpm sim:replay sim-reports/<file>.json
 ```
 

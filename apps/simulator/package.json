@@ -12,6 +12,7 @@
     "failures": "tsx src/index.ts failures",
     "mixed": "tsx src/index.ts mixed",
     "load": "tsx src/index.ts load",
+    "traffic": "tsx src/index.ts traffic",
     "replay": "tsx src/index.ts replay",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"

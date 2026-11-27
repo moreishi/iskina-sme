@@ -31,6 +31,7 @@
     "sim:failures": "pnpm --filter @iskina/simulator failures",
     "sim:mixed": "pnpm --filter @iskina/simulator mixed",
     "sim:load": "pnpm --filter @iskina/simulator load",
+    "sim:traffic": "pnpm --filter @iskina/simulator traffic",
     "sim:replay": "pnpm --filter @iskina/simulator replay"
   },
   "devDependencies": {

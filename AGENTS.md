@@ -53,6 +53,7 @@ flutter analyze && flutter test
 
 pnpm sim:seed            # virtual HATOD + merchant agents against the real API
 pnpm sim:food && pnpm sim:failures
+pnpm sim:traffic --duration=5m --rate=2
 ```
 
 Android builds need a JDK 17 + Android SDK; analyze/test do not.

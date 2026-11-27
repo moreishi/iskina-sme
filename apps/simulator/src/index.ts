@@ -2,6 +2,7 @@ import { ConfigError, loadConfig, type SimConfig } from './config'
 import { ConsumerAgent } from './consumer'
 import { HttpClient } from './http'
 import { MerchantAgent } from './merchant'
+import { parseDuration } from './random'
 import { printResult, readJournal, writeJournal } from './report'
 import {
   airconScenario,
@@ -13,7 +14,8 @@ import {
   mixedScenario,
   type ScenarioResult,
 } from './scenarios'
-import { seedAll } from './seed'
+import { seedAll, type Vertical } from './seed'
+import { trafficScenario } from './traffic'
 
 const HELP = `
 Iskina SME simulator
@@ -25,11 +27,17 @@ Iskina SME simulator
   pnpm sim:failures
   pnpm sim:mixed --orders=20 --concurrency=5
   pnpm sim:load  --orders=100 --concurrency=10
+  pnpm sim:traffic --duration=10m --rate=2 --failure-rate=0.1
   pnpm sim:replay sim-reports/food-....json
 
 Flags:
   --base-url=http://localhost:3008   override SIM_BASE_URL
-  --orders=N --concurrency=N         mixed/load only
+  --orders=N --concurrency=N         mixed/load/traffic
+  --duration=10m --rate=2            traffic window and orders per second
+  --vertical=food|aircon|lpg|mixed   traffic mix (default mixed)
+  --failure-rate=0.1 --seed=42       traffic failure share and RNG seed
+  --business=<slug>                  traffic target (default SIM stores)
+  --step-delay=500                   traffic ms between merchant steps
   --verbose                          print every step
 
 Safety:
@@ -99,6 +107,25 @@ async function main(): Promise<void> {
     case 'load':
       result = await loadScenario(ctx, options)
       break
+    case 'traffic': {
+      const verticalFlag = flags.get('vertical') ?? 'mixed'
+      if (!['food', 'aircon', 'lpg', 'mixed'].includes(verticalFlag)) {
+        throw new Error(`Unknown vertical: ${verticalFlag}`)
+      }
+      const durationMs = parseDuration(flags.get('duration'))
+      result = await trafficScenario(ctx, {
+        orders: flags.has('orders') ? numberFlag(flags.get('orders'), 50) : undefined,
+        durationMs: durationMs ?? undefined,
+        concurrency: numberFlag(flags.get('concurrency'), 5),
+        failureRate: clamp(Number(flags.get('failure-rate') ?? 0), 0, 1),
+        ratePerSec: Math.max(0.05, Number(flags.get('rate') ?? 1)),
+        vertical: verticalFlag as Vertical | 'mixed',
+        seed: flags.has('seed') ? Number(flags.get('seed')) : undefined,
+        businessSlug: flags.get('business'),
+        stepDelayMs: Math.max(0, Number(flags.get('step-delay') ?? 500)),
+      })
+      break
+    }
     case 'replay': {
       const file = positional[0]
       if (!file) throw new Error('replay needs a journal path')
@@ -139,6 +166,14 @@ async function runByName(
       return mixedScenario(ctx, options)
     case 'load':
       return loadScenario(ctx, options)
+    case 'traffic':
+      return trafficScenario(ctx, {
+        orders: options.orders,
+        concurrency: options.concurrency,
+        failureRate: 0,
+        vertical: 'mixed',
+        stepDelayMs: 0,
+      })
     default:
       throw new Error(`Unknown scenario in journal: ${scenario}`)
   }
@@ -147,6 +182,11 @@ async function runByName(
 function numberFlag(value: string | undefined, fallback: number): number {
   const parsed = Number(value)
   return Number.isFinite(parsed) && parsed > 0 ? Math.trunc(parsed) : fallback
+}
+
+function clamp(value: number, min: number, max: number): number {
+  if (!Number.isFinite(value)) return min
+  return Math.min(max, Math.max(min, value))
 }
 
 main().catch((error) => {
