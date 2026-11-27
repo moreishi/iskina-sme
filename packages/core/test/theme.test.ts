@@ -7,15 +7,22 @@ import {
 } from '../src/theme/validate'
 
 describe('theme presets', () => {
-  it('defaults to Ember (brand orange #FF6A00)', () => {
-    expect(DEFAULT_PRESET_ID).toBe('alibaba')
-    expect(defaultPreset().label).toBe('Ember')
-    expect(defaultPreset().tokens.light.primary).toBe('#FF6A00')
+  it('defaults to Rosso (racing red #D40000)', () => {
+    expect(DEFAULT_PRESET_ID).toBe('ferrari')
+    expect(defaultPreset().label).toBe('Rosso')
+    expect(defaultPreset().tokens.light.primary).toBe('#D40000')
+    expect(defaultPreset().tokens.light.onPrimary).toBe('#FFFFFF')
   })
 
-  it('ships four presets with unique ids', () => {
+  it('ships five presets with unique ids', () => {
     const presets = listPresets()
-    expect(presets.map((preset) => preset.id)).toEqual(['alibaba', 'ocean', 'forest', 'mono'])
+    expect(presets.map((preset) => preset.id)).toEqual([
+      'ferrari',
+      'alibaba',
+      'ocean',
+      'forest',
+      'mono',
+    ])
     expect(new Set(presets.map((preset) => preset.id)).size).toBe(presets.length)
   })
 
@@ -44,7 +51,7 @@ describe('theme validation', () => {
   })
 
   it('rejects white text on Ember orange', () => {
-    const manifest = themeManifestFromPreset(defaultPreset(), 1)
+    const manifest = themeManifestFromPreset(getPreset('alibaba'), 1)
     manifest.tokens.light.onPrimary = '#FFFFFF'
     const issues = validateThemeTokens(manifest.tokens.light, 'light')
     expect(issues.some((issue) => issue.ratio !== undefined && issue.ratio < 4.5)).toBe(true)

@@ -65,7 +65,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         const SizedBox(height: 8),
         if (tokens == null)
           Text(
-            'Using the default Ember preset.',
+            'Using the default Rosso preset.',
             style: theme.textTheme.bodySmall,
           )
         else

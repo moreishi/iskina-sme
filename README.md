@@ -96,10 +96,10 @@ packages/
 
 ## Default theme
 
-Every business starts on the **Ember** preset (internal id `alibaba`): primary
-`#FF6A00`, warm surfaces and near-black text so filled controls keep AA
-contrast. Businesses override it in the theme editor; every publish creates an
-immutable version.
+Every business starts on the **Rosso** preset (internal id `ferrari`): racing red
+`#D40000` with white button text, a Giallo accent and near-black surfaces.
+Businesses override it in the theme editor; every publish creates an immutable
+version. Ember, Ocean, Forest and Mono remain available.
 
 ## Milestones
 

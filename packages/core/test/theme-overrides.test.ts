@@ -11,6 +11,13 @@ describe('theme overrides', () => {
     expect(contrastRatio(manifest.tokens.light.onPrimary, '#FF6A00')).toBeGreaterThanOrEqual(4.5)
   })
 
+  it('defaults to Rosso with white button text', () => {
+    const manifest = buildThemeManifest({}, 1)
+    expect(manifest.tokens.light.primary).toBe('#D40000')
+    expect(manifest.tokens.light.onPrimary).toBe('#FFFFFF')
+    expect(contrastRatio('#FFFFFF', '#D40000')).toBeGreaterThanOrEqual(4.5)
+  })
+
   it('derives white text for a dark primary', () => {
     const manifest = buildThemeManifest({ presetId: 'mono', light: { primary: '#1F1F1F' } }, 1)
     expect(manifest.tokens.light.onPrimary).toBe('#FFFFFF')

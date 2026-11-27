@@ -8,8 +8,50 @@ export interface ThemePreset {
 }
 
 /**
- * Ember — the default. Brand orange #FF6A00 with near-black text: white on
- * #FF6A00 is only 2.9:1, so filled controls use `onPrimary` for AA.
+ * Rosso — the default. Ferrari-style racing red with white button text, a
+ * Giallo accent and near-black surfaces. The label stays neutral in the UI.
+ */
+const rosso: ThemePreset = {
+  id: 'ferrari',
+  label: 'Rosso',
+  layout: 'grid',
+  tokens: {
+    light: {
+      primary: '#D40000',
+      onPrimary: '#FFFFFF',
+      accent: '#FFF200',
+      onAccent: '#121212',
+      surface: '#FFFFFF',
+      surfaceMuted: '#F5F2EE',
+      onSurface: '#121212',
+      outline: '#D9D4CE',
+      success: '#1B7F3B',
+      warning: '#B26A00',
+      danger: '#B00020',
+      radius: 'md',
+      font: 'sans',
+    },
+    dark: {
+      primary: '#E00000',
+      onPrimary: '#FFFFFF',
+      accent: '#FFE600',
+      onAccent: '#121212',
+      surface: '#0E0E0E',
+      surfaceMuted: '#1A1A1A',
+      onSurface: '#F5F5F5',
+      outline: '#3A3A3A',
+      success: '#3DDC84',
+      warning: '#FFB020',
+      danger: '#FF6B6B',
+      radius: 'md',
+      font: 'sans',
+    },
+  },
+}
+
+/**
+ * Ember — brand orange #FF6A00 with near-black text: white on #FF6A00 is only
+ * 2.9:1, so filled controls use `onPrimary` for AA.
  */
 const ember: ThemePreset = {
   id: 'alibaba',
@@ -163,9 +205,9 @@ const mono: ThemePreset = {
   },
 }
 
-export const THEME_PRESETS: readonly ThemePreset[] = [ember, ocean, forest, mono]
+export const THEME_PRESETS: readonly ThemePreset[] = [rosso, ember, ocean, forest, mono]
 
-export const DEFAULT_PRESET_ID = 'alibaba'
+export const DEFAULT_PRESET_ID = 'ferrari'
 
 export function listPresets(): readonly ThemePreset[] {
   return THEME_PRESETS

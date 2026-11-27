@@ -1,5 +1,5 @@
 import { VERTICAL_FULFILLMENT, VERTICAL_LABELS, VERTICALS } from '@iskina/contracts'
-import { contrastRatio, listPresets } from '@iskina/core'
+import { contrastRatio, DEFAULT_PRESET_ID, listPresets } from '@iskina/core'
 import { getDb } from '@iskina/db'
 import { sql } from 'drizzle-orm'
 import Link from 'next/link'
@@ -201,7 +201,7 @@ export default async function HomePage() {
                 <div className="space-y-1 bg-[var(--surface-raised)] p-4">
                   <div className="flex items-center justify-between gap-2">
                     <h3 className="font-semibold">{preset.label}</h3>
-                    {preset.id === 'alibaba' ? (
+                    {preset.id === DEFAULT_PRESET_ID ? (
                       <span className="rounded-full bg-[var(--primary)] px-2 py-0.5 text-[11px] font-bold text-[var(--on-primary)]">
                         default
                       </span>

@@ -9,15 +9,15 @@ void main() {
       ThemeTokens.fallbackLight,
       Brightness.light,
     );
-    expect(data.colorScheme.primary, hexColor('#FF6A00'));
-    expect(data.colorScheme.onPrimary, hexColor('#1A1A1A'));
-    expect(data.scaffoldBackgroundColor, hexColor('#FFF4EA'));
+    expect(data.colorScheme.primary, hexColor('#D40000'));
+    expect(data.colorScheme.onPrimary, hexColor('#FFFFFF'));
+    expect(data.scaffoldBackgroundColor, hexColor('#F5F2EE'));
   });
 
   test('dark theme keeps its own surface', () {
     final data = buildMerchantTheme(ThemeTokens.fallbackDark, Brightness.dark);
     expect(data.brightness, Brightness.dark);
-    expect(data.colorScheme.surface, hexColor('#12100E'));
+    expect(data.colorScheme.surface, hexColor('#0E0E0E'));
   });
 
   test('bad hex falls back instead of throwing', () {

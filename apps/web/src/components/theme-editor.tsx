@@ -1,7 +1,13 @@
 'use client'
 
 import type { ThemeManifest, ThemeTokens } from '@iskina/contracts'
-import { bestOnColor, buildThemeManifest, contrastRatio, validateThemeManifest } from '@iskina/core'
+import {
+  bestOnColor,
+  buildThemeManifest,
+  contrastRatio,
+  DEFAULT_PRESET_ID,
+  validateThemeManifest,
+} from '@iskina/core'
 import { useMemo, useState } from 'react'
 
 type Editable = { primary: string; accent: string; surface: string; onSurface: string }
@@ -58,8 +64,8 @@ export function ThemeEditor({
   presets: PresetProp[]
   initial: { version: number; manifest: ThemeManifest; publishedAt: string } | null
 }) {
-  const start = initial?.manifest ?? buildThemeManifest({ presetId: 'alibaba' }, 1)
-  const [presetId, setPresetId] = useState('alibaba')
+  const start = initial?.manifest ?? buildThemeManifest({ presetId: DEFAULT_PRESET_ID }, 1)
+  const [presetId, setPresetId] = useState(DEFAULT_PRESET_ID)
   const [layout, setLayout] = useState<'grid' | 'list' | 'compact'>(
     initial?.manifest.layout ?? 'grid',
   )

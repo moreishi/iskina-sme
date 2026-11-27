@@ -87,25 +87,25 @@ class ThemeTokens {
   );
 
   static const fallbackLight = ThemeTokens(
-    primary: '#FF6A00',
-    onPrimary: '#1A1A1A',
-    accent: '#FFB300',
-    onAccent: '#1A1A1A',
-    surface: '#FFFDF9',
-    surfaceMuted: '#FFF4EA',
-    onSurface: '#1A1A1A',
-    outline: '#E8DED4',
+    primary: '#D40000',
+    onPrimary: '#FFFFFF',
+    accent: '#FFF200',
+    onAccent: '#121212',
+    surface: '#FFFFFF',
+    surfaceMuted: '#F5F2EE',
+    onSurface: '#121212',
+    outline: '#D9D4CE',
   );
 
   static const fallbackDark = ThemeTokens(
-    primary: '#FF8A3D',
-    onPrimary: '#1A1A1A',
-    accent: '#FFC94D',
-    onAccent: '#1A1A1A',
-    surface: '#12100E',
-    surfaceMuted: '#1F1813',
-    onSurface: '#F5EFE9',
-    outline: '#3A3129',
+    primary: '#E00000',
+    onPrimary: '#FFFFFF',
+    accent: '#FFE600',
+    onAccent: '#121212',
+    surface: '#0E0E0E',
+    surfaceMuted: '#1A1A1A',
+    onSurface: '#F5F5F5',
+    outline: '#3A3A3A',
   );
 }
 

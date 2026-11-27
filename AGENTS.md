@@ -118,8 +118,9 @@ packages/
 
 ## 7. Themes
 
-- Presets: `alibaba` (Ember, default), `ocean`, `forest`, `mono`. IDs are
-  internal; UI labels are neutral ("Ember"), never a third-party trademark.
+- Presets: `ferrari` (Rosso, default), `alibaba` (Ember), `ocean`, `forest`,
+  `mono`. IDs are internal; UI labels are neutral ("Rosso"), never a third-party
+  trademark.
 - Tokens: `primary`, `onPrimary`, `accent`, `onAccent`, `surface`,
   `surfaceMuted`, `onSurface`, `outline`, `success`, `warning`, `danger`.
 - `layout`: `grid | list | compact`; `radius`: `sm | md | lg | full`;
