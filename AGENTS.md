@@ -50,6 +50,9 @@ pnpm lint && pnpm typecheck && pnpm test
 cd apps/merchant
 flutter pub get
 flutter analyze && flutter test
+
+pnpm sim:seed            # virtual HATOD + merchant agents against the real API
+pnpm sim:food && pnpm sim:failures
 ```
 
 Android builds need a JDK 17 + Android SDK; analyze/test do not.
@@ -89,6 +92,7 @@ Android builds need a JDK 17 + Android SDK; analyze/test do not.
 apps/
   web/          dashboard + /api/v1 (channel + merchant) + webhooks + worker
   merchant/     Flutter app + android Kotlin platform layer (M4b)
+  simulator/    virtual consumers/merchants exercising the real API
 packages/
   core/         state machines, pricing, theme presets/validation, analytics defs
   db/           Drizzle schema, migrations, tenant context, seeds
@@ -142,10 +146,10 @@ aggregates, and every query runs in tenant context.
 
 ## 9. Current milestone
 
-M5a shipped — platform channel key, storefront discovery, storefront payload
-(catalog + theme), and cross-business quotes/orders. See
-`docs/hatod-channel.md`. Next: M5b, the HATOD adapter behind
-`MARKETPLACE_BACKEND`, then parity in staging.
+M5a/M5b prerequisites shipped — platform channel key, storefront discovery,
+storefront payload, quotes, orders, status and customer cancellation.
+A black-box simulator (`apps/simulator`) exercises the real API. Next: HATOD
+adapter cutover and status webhooks.
 
 ## 10. Coolify
 

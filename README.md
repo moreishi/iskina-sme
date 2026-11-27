@@ -63,6 +63,25 @@ pnpm test
 pnpm build
 ```
 
+## Simulator (development / QA)
+
+`apps/simulator` drives the **real API** with virtual HATOD consumers and
+merchant agents — no mocked transitions, no direct database writes.
+
+```bash
+pnpm sim:seed
+pnpm sim:food
+pnpm sim:aircon
+pnpm sim:lpg
+pnpm sim:failures
+pnpm sim:mixed --orders=20 --concurrency=5
+pnpm sim:load  --orders=100 --concurrency=10
+pnpm sim:replay sim-reports/<file>.json
+```
+
+See [`apps/simulator/README.md`](./apps/simulator/README.md) for setup, safety
+flags and the remote-staging requirements (dev OTP must be enabled).
+
 ## Deployment (Coolify)
 
 The repo ships a multi-target `Dockerfile` (`web`, `migrate`),
@@ -86,7 +105,8 @@ AUTH_SECRET=dev-only-secret APP_URL=http://localhost:3008 POSTGRES_PASSWORD=iski
 ```
 apps/
   web/          dashboard + /api/v1 (channel + merchant) + webhooks + worker
-  merchant/     Flutter merchant app (M4b)
+  merchant/     Flutter merchant app (Android)
+  simulator/    virtual consumers/merchants against the real API
 packages/
   core/         state machines, pricing, theme presets/validation, analytics defs
   db/           Drizzle schema, migrations, tenant context, seeds

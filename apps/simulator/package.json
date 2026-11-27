@@ -1,0 +1,29 @@
+{
+  "name": "@iskina/simulator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sim": "tsx src/index.ts",
+    "seed": "tsx src/index.ts seed",
+    "food": "tsx src/index.ts food",
+    "aircon": "tsx src/index.ts aircon",
+    "lpg": "tsx src/index.ts lpg",
+    "failures": "tsx src/index.ts failures",
+    "mixed": "tsx src/index.ts mixed",
+    "load": "tsx src/index.ts load",
+    "replay": "tsx src/index.ts replay",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "dotenv": "18.0.9"
+  },
+  "devDependencies": {
+    "@iskina/config": "workspace:*",
+    "@types/node": "26.6.6",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "vitest": "5.0.5"
+  }
+}
