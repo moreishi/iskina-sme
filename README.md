@@ -15,6 +15,8 @@ API for HATOD: storefront discovery, storefront payload with catalog + theme,
 quotes and idempotent orders.
 
 See [`AGENTS.md`](./AGENTS.md) for the boundary, rules and roadmap.
+[`docs/IMPLEMENTATION.md`](./docs/IMPLEMENTATION.md) covers the architecture,
+data model, APIs, mobile app, simulator and operations.
 
 ## Stack
 

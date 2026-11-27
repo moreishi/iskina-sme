@@ -163,3 +163,6 @@ adapter cutover and status webhooks.
 (one-shot). `docker-compose.coolify.yml` runs `postgres → migrate → web`.
 Keep `SEED_DEMO_DATA=false` in production and read `COOLIFY.md` before changing
 the stack. Never bake secrets into images or compose defaults.
+
+The full architecture, data model, API and operations guide lives in
+`docs/IMPLEMENTATION.md`.
