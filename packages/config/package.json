@@ -1,0 +1,9 @@
+{
+  "name": "@iskina/config",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "exports": {
+    "./tsconfig.base.json": "./tsconfig.base.json"
+  }
+}

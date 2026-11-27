@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: iskina-sme-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: iskina
+      POSTGRES_PASSWORD: iskina
+      POSTGRES_DB: iskina_sme
+    ports:
+      - "5437:5432"
+    volumes:
+      - iskina-sme-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U iskina -d iskina_sme"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  iskina-sme-pgdata:

@@ -1,0 +1,9 @@
+# Local-only override: publish the web port for a smoke test of the Coolify stack.
+# Do not include this file in Coolify; Coolify routes the exposed port itself.
+#
+#   AUTH_SECRET=dev-only-... APP_URL=http://localhost:3008 POSTGRES_PASSWORD=iskina \
+#     docker compose -f docker-compose.coolify.yml -f docker-compose.coolify.local.yml up --build
+services:
+  web:
+    ports:
+      - "3008:3000"

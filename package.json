@@ -1,0 +1,29 @@
+{
+  "name": "iskina-sme",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@12.14.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "turbo run dev --filter=@iskina/web",
+    "build": "turbo run build",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "db:up": "docker compose up -d --wait postgres",
+    "db:down": "docker compose stop postgres",
+    "db:generate": "pnpm --filter @iskina/db generate",
+    "db:migrate": "pnpm --filter @iskina/db migrate",
+    "db:seed": "pnpm --filter @iskina/db seed",
+    "db:studio": "pnpm --filter @iskina/db studio"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.4",
+    "turbo": "2.11.10",
+    "typescript": "5.9.3"
+  }
+}

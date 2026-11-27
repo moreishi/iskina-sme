@@ -1,0 +1,78 @@
+# Coolify / Docker Compose deployment.
+# Copy the variables from .env.coolify.example into the Coolify resource.
+name: iskina-sme
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-iskina}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-iskina_sme}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migrate
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-iskina}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-iskina_sme}
+      SEED_DEMO_DATA: ${SEED_DEMO_DATA:-false}
+    command:
+      - sh
+      - -c
+      - >-
+        pnpm --filter @iskina/db migrate &&
+        if [ "$$SEED_DEMO_DATA" = "true" ]; then pnpm --filter @iskina/db seed; fi
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: web
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOSTNAME: 0.0.0.0
+      DATABASE_URL: postgres://${POSTGRES_USER:-iskina}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-iskina_sme}
+      APP_URL: ${APP_URL:?set APP_URL to the public https URL}
+      NEXT_PUBLIC_APP_URL: ${APP_URL}
+      AUTH_SECRET: ${AUTH_SECRET:?set AUTH_SECRET (openssl rand -hex 32)}
+      THEME_DEFAULT_PRESET: ${THEME_DEFAULT_PRESET:-alibaba}
+      ISKINA_OTP_BASE_URL: ${ISKINA_OTP_BASE_URL:-}
+      ISKINA_OTP_API_KEY: ${ISKINA_OTP_API_KEY:-}
+    expose:
+      - "3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+
+volumes:
+  pgdata:
