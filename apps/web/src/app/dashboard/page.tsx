@@ -68,6 +68,14 @@ export default async function DashboardPage() {
               <p className="mt-4 text-sm text-[var(--muted-text)]">
                 {membership.vertical ? VERTICAL_LABELS[membership.vertical] : 'Tenant-wide'}
               </p>
+              {membership.businessId ? (
+                <Link
+                  href={`/dashboard/businesses/${membership.businessId}/catalog`}
+                  className="mt-4 inline-block rounded-lg border border-[var(--outline)] px-3 py-1.5 text-sm font-medium hover:border-[var(--primary)]"
+                >
+                  Manage catalog
+                </Link>
+              ) : null}
             </article>
           ))}
         </div>

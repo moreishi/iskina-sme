@@ -1,5 +1,6 @@
 import { sql } from 'drizzle-orm'
 import {
+  boolean,
   index,
   integer,
   jsonb,
@@ -99,6 +100,8 @@ export const businesses = pgTable(
     vertical: vertical('vertical').notNull(),
     status: businessStatus('status').default('active').notNull(),
     timezone: text('timezone').default('Asia/Manila').notNull(),
+    /** Partial override of the vertical preset; null means use the preset. */
+    verticalConfig: jsonb('vertical_config'),
     ...timestamps,
   },
   (t) => [
@@ -152,6 +155,59 @@ export const apiKeys = pgTable(
   ],
 )
 
+export const catalogCategories = pgTable(
+  'catalog_categories',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    businessId: uuid('business_id')
+      .notNull()
+      .references(() => businesses.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    sortOrder: integer('sort_order').default(0).notNull(),
+    active: boolean('active').default(true).notNull(),
+    ...timestamps,
+  },
+  (t) => [
+    uniqueIndex('catalog_categories_business_name_uq').on(t.businessId, t.name),
+    index('catalog_categories_tenant_idx').on(t.tenantId),
+    index('catalog_categories_business_idx').on(t.businessId),
+  ],
+)
+
+export const catalogItems = pgTable(
+  'catalog_items',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    businessId: uuid('business_id')
+      .notNull()
+      .references(() => businesses.id, { onDelete: 'cascade' }),
+    categoryId: uuid('category_id').references(() => catalogCategories.id, {
+      onDelete: 'set null',
+    }),
+    name: text('name').notNull(),
+    description: text('description'),
+    priceCentavos: integer('price_centavos').notNull(),
+    unit: text('unit').default('piece').notNull(),
+    available: boolean('available').default(true).notNull(),
+    stockCount: integer('stock_count'),
+    imageUrl: text('image_url'),
+    metadata: jsonb('metadata').default({}).notNull(),
+    sortOrder: integer('sort_order').default(0).notNull(),
+    ...timestamps,
+  },
+  (t) => [
+    index('catalog_items_tenant_idx').on(t.tenantId),
+    index('catalog_items_business_idx').on(t.businessId),
+    index('catalog_items_category_idx').on(t.categoryId),
+  ],
+)
+
 export const auditLogs = pgTable(
   'audit_logs',
   {
@@ -179,4 +235,6 @@ export type User = typeof users.$inferSelect
 export type Business = typeof businesses.$inferSelect
 export type Membership = typeof memberships.$inferSelect
 export type ApiKey = typeof apiKeys.$inferSelect
+export type CatalogCategory = typeof catalogCategories.$inferSelect
+export type CatalogItem = typeof catalogItems.$inferSelect
 export type AuditLog = typeof auditLogs.$inferSelect

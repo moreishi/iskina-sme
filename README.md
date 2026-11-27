@@ -9,12 +9,11 @@ execution to its own dispatch.
 
 ## Status
 
-**M1b — tenancy, auth and RLS complete.** Owners sign in with OTP (delegated to
-`iskina-otp`, local dev codes outside production), onboarding creates a tenant +
-business + owner membership, and HATOD channel keys are issued and revoked from
-the dashboard with an audit trail. The app connects as a non-superuser
-`iskina_app` role, so row-level security is enforced in development and
-production, not just in tests.
+**M2 — catalog and vertical configs complete.** Owners sign in with OTP,
+onboarding creates a tenant + business + owner membership, HATOD channel keys
+are issued and revoked from the dashboard, and each business manages its catalog
+with vertical-specific defaults (food delivery, aircon booking, LPG refill).
+RLS is enforced through a non-superuser role in development and production.
 
 See [`AGENTS.md`](./AGENTS.md) for the boundary, rules and roadmap.
 

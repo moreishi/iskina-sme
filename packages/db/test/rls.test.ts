@@ -16,6 +16,8 @@ const businessB = randomUUID()
 const userA = randomUUID()
 const keyA = randomUUID()
 const keyB = randomUUID()
+const categoryA = randomUUID()
+const itemA = randomUUID()
 const hashA = `hash_a_${suffix}`
 const hashB = `hash_b_${suffix}`
 
@@ -83,6 +85,15 @@ beforeAll(async () => {
       ($4, $5, 'Key B', 'sk_test_b', $6, 'test')`,
     [keyA, tenantA, hashA, keyB, tenantB, hashB],
   )
+  await admin.query(
+    `insert into catalog_categories (id, tenant_id, business_id, name) values ($1, $2, $3, 'Meals')`,
+    [categoryA, tenantA, businessA],
+  )
+  await admin.query(
+    `insert into catalog_items (id, tenant_id, business_id, category_id, name, price_centavos)
+     values ($1, $2, $3, $4, 'Adobo', 12000)`,
+    [itemA, tenantA, businessA, categoryA],
+  )
 
   probe = new Pool({ connectionString: withCredentials(adminUrl, role, password) })
 })
@@ -90,6 +101,8 @@ beforeAll(async () => {
 afterAll(async () => {
   await probe?.end()
   if (admin) {
+    await admin.query(`delete from catalog_items where id = $1`, [itemA])
+    await admin.query(`delete from catalog_categories where id = $1`, [categoryA])
     await admin.query(`delete from api_keys where id in ($1, $2)`, [keyA, keyB])
     await admin.query(`delete from memberships where user_id = $1`, [userA])
     await admin.query(`delete from businesses where id in ($1, $2)`, [businessA, businessB])
@@ -152,6 +165,17 @@ describe('row level security', () => {
   it('hides api keys without a tenant or hash context', async () => {
     const { rows } = await probe.query('select id from api_keys')
     expect(rows).toEqual([])
+  })
+
+  it('isolates catalog items by tenant', async () => {
+    const withoutContext = await probe.query('select id from catalog_items')
+    expect(withoutContext.rows).toEqual([])
+
+    const rows = await inTenant(tenantA, async (client) => {
+      const result = await client.query('select id from catalog_items')
+      return result.rows as { id: string }[]
+    })
+    expect(rows.map((row) => row.id)).toEqual([itemA])
   })
 
   it('blocks writes outside the tenant context', async () => {

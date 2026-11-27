@@ -94,6 +94,8 @@ packages/
 
 - Channel (HATOD): bearer `sk_test_`/`sk_live_`, scoped per business.
 - Merchant app: staff session (OTP delegated to `iskina-otp`).
+- Catalog: `/api/v1/catalog*`; owners and managers write, staff read. Prices are
+  integer centavos and a category must belong to the same business as the item.
 - Errors: `{ error: { code, message, requestId } }`.
 - Writes accept `Idempotency-Key`; webhooks are HMAC-signed and retried.
 - OpenAPI at `/api/openapi`.
@@ -120,9 +122,9 @@ HATOD channel lands.
 
 ## 9. Current milestone
 
-M1b shipped — tenancy, OTP sessions, onboarding, channel keys, audit, and RLS
-enforced through the non-superuser `iskina_app` role. Next: M2 catalog and
-vertical configs.
+M2 shipped — catalog CRUD with tenant isolation, vertical presets, and the
+merchant catalog UI. Next: M3 order/booking state machines, board API, SSE and
+push.
 
 ## 10. Coolify
 

@@ -1,5 +1,6 @@
 import type { MembershipView } from '@iskina/db'
 import { describe, expect, it } from 'vitest'
+import { businessMembership } from '../src/lib/auth/business'
 import { ownerMembership, type SessionContext } from '../src/lib/auth/session'
 
 const A = '11111111-1111-4111-8111-111111111111'
@@ -52,5 +53,25 @@ describe('owner membership resolution', () => {
       memberships: [membership({ role: 'staff' })],
     }
     expect(ownerMembership(staff)).toBeNull()
+  })
+})
+
+describe('business membership', () => {
+  it('allows the owner and manager of the business', () => {
+    expect(businessMembership(session, 'biz-a')?.role).toBe('owner')
+    expect(businessMembership(session, 'biz-b', ['owner', 'manager'])?.role).toBe('manager')
+  })
+
+  it('refuses staff when an edit role is required', () => {
+    const staff: SessionContext = {
+      user: session.user,
+      memberships: [membership({ businessId: 'biz-a', role: 'staff' })],
+    }
+    expect(businessMembership(staff, 'biz-a')).toBeNull()
+    expect(businessMembership(staff, 'biz-a', ['owner', 'manager', 'staff'])?.role).toBe('staff')
+  })
+
+  it('refuses a business the user does not belong to', () => {
+    expect(businessMembership(session, 'biz-c')).toBeNull()
   })
 })

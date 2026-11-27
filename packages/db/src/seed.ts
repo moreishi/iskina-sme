@@ -1,6 +1,6 @@
 import { sql } from 'drizzle-orm'
 import { createDb } from './client'
-import { businesses, memberships, tenants, users } from './schema'
+import { businesses, catalogCategories, catalogItems, memberships, tenants, users } from './schema'
 
 const DEMO_OWNER_PHONE = '+639170000001'
 
@@ -11,6 +11,23 @@ const DEMO = [
     name: "Aling Nena's Kitchen",
     slug: 'aling-nena',
     vertical: 'food' as const,
+    categories: [
+      {
+        id: '11111111-1111-4111-8111-333333333331',
+        name: 'Rice meals',
+        items: [
+          { id: '11111111-1111-4111-8111-444444444441', name: 'Chicken adobo', price: 12_000 },
+          { id: '11111111-1111-4111-8111-444444444442', name: 'Lechon kawali', price: 15_000 },
+        ],
+      },
+      {
+        id: '11111111-1111-4111-8111-333333333332',
+        name: 'Drinks',
+        items: [
+          { id: '11111111-1111-4111-8111-444444444443', name: "Sago't gulaman", price: 4_500 },
+        ],
+      },
+    ],
   },
   {
     id: '22222222-2222-4222-8222-222222222221',
@@ -18,6 +35,24 @@ const DEMO = [
     name: 'Cebu Cool Aircon Services',
     slug: 'cebu-cool',
     vertical: 'aircon' as const,
+    categories: [
+      {
+        id: '22222222-2222-4222-8222-333333333331',
+        name: 'Cleaning',
+        items: [
+          {
+            id: '22222222-2222-4222-8222-444444444441',
+            name: 'Split unit cleaning',
+            price: 80_000,
+          },
+          {
+            id: '22222222-2222-4222-8222-444444444442',
+            name: 'Window unit cleaning',
+            price: 50_000,
+          },
+        ],
+      },
+    ],
   },
   {
     id: '33333333-3333-4333-8333-333333333331',
@@ -25,6 +60,16 @@ const DEMO = [
     name: 'Mactan LPG Trading',
     slug: 'mactan-lpg',
     vertical: 'lpg' as const,
+    categories: [
+      {
+        id: '33333333-3333-4333-8333-333333333331',
+        name: 'LPG',
+        items: [
+          { id: '33333333-3333-4333-8333-444444444441', name: '11kg tank exchange', price: 85_000 },
+          { id: '33333333-3333-4333-8333-444444444442', name: '22kg refill', price: 160_000 },
+        ],
+      },
+    ],
   },
 ]
 
@@ -81,6 +126,33 @@ async function main() {
             role: 'owner',
           })
           .onConflictDoNothing()
+
+        for (const category of demo.categories) {
+          await tx
+            .insert(catalogCategories)
+            .values({
+              id: category.id,
+              tenantId: demo.id,
+              businessId: demo.businessId,
+              name: category.name,
+            })
+            .onConflictDoNothing()
+
+          for (const item of category.items) {
+            await tx
+              .insert(catalogItems)
+              .values({
+                id: item.id,
+                tenantId: demo.id,
+                businessId: demo.businessId,
+                categoryId: category.id,
+                name: item.name,
+                priceCentavos: item.price,
+                unit: 'order',
+              })
+              .onConflictDoNothing()
+          }
+        }
       }
     })
 
