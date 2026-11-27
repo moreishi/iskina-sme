@@ -1,8 +1,37 @@
 import { sql } from 'drizzle-orm'
 import { createDb } from './client'
-import { businesses, catalogCategories, catalogItems, memberships, tenants, users } from './schema'
+import {
+  businesses,
+  catalogCategories,
+  catalogItems,
+  customers,
+  memberships,
+  orderEvents,
+  orderLines,
+  orders,
+  tenants,
+  users,
+} from './schema'
 
 const DEMO_OWNER_PHONE = '+639170000001'
+
+interface SeedOrder {
+  id: string
+  customerId: string
+  number: string
+  kind: 'delivery' | 'booking'
+  status: 'PLACED' | 'ACCEPTED'
+  customerName: string
+  customerPhone: string
+  subtotalCentavos: number
+  deliveryFeeCentavos: number
+  totalCentavos: number
+  address: string
+  scheduledAt: Date | null
+  intake: Record<string, unknown>
+  lines: { id: string; itemId: string; name: string; unitPriceCentavos: number; quantity: number }[]
+  events: { id: string; from: 'PLACED' | null; to: 'PLACED' | 'ACCEPTED' }[]
+}
 
 const DEMO = [
   {
@@ -72,6 +101,73 @@ const DEMO = [
     ],
   },
 ]
+
+const SEED_ORDERS: Record<string, SeedOrder[]> = {
+  'aling-nena': [
+    {
+      id: '11111111-1111-4111-8111-555555555551',
+      customerId: '11111111-1111-4111-8111-666666666661',
+      number: 'SME-20261127-A1',
+      kind: 'delivery',
+      status: 'PLACED',
+      customerName: 'Maria Santos',
+      customerPhone: '+639171111111',
+      subtotalCentavos: 16_500,
+      deliveryFeeCentavos: 3_900,
+      totalCentavos: 20_400,
+      address: 'Unit 4, Lahug, Cebu City',
+      scheduledAt: null,
+      intake: {},
+      lines: [
+        {
+          id: '11111111-1111-4111-8111-777777777771',
+          itemId: '11111111-1111-4111-8111-444444444441',
+          name: 'Chicken adobo',
+          unitPriceCentavos: 12_000,
+          quantity: 1,
+        },
+        {
+          id: '11111111-1111-4111-8111-777777777772',
+          itemId: '11111111-1111-4111-8111-444444444443',
+          name: "Sago't gulaman",
+          unitPriceCentavos: 4_500,
+          quantity: 1,
+        },
+      ],
+      events: [{ id: '11111111-1111-4111-8111-888888888881', from: null, to: 'PLACED' }],
+    },
+  ],
+  'cebu-cool': [
+    {
+      id: '22222222-2222-4222-8222-555555555551',
+      customerId: '22222222-2222-4222-8222-666666666661',
+      number: 'SME-20261127-B1',
+      kind: 'booking',
+      status: 'ACCEPTED',
+      customerName: 'Jose Lim',
+      customerPhone: '+639172222222',
+      subtotalCentavos: 80_000,
+      deliveryFeeCentavos: 0,
+      totalCentavos: 80_000,
+      address: '12B Banilad, Cebu City',
+      scheduledAt: new Date('2026-12-01T02:00:00.000Z'),
+      intake: { unitCount: 2, unitType: 'split' },
+      lines: [
+        {
+          id: '22222222-2222-4222-8222-777777777771',
+          itemId: '22222222-2222-4222-8222-444444444441',
+          name: 'Split unit cleaning',
+          unitPriceCentavos: 80_000,
+          quantity: 1,
+        },
+      ],
+      events: [
+        { id: '22222222-2222-4222-8222-888888888881', from: null, to: 'PLACED' },
+        { id: '22222222-2222-4222-8222-888888888882', from: 'PLACED', to: 'ACCEPTED' },
+      ],
+    },
+  ],
+}
 
 /**
  * Demo data for a fresh local/staging database. Runs as the app role, so each
@@ -152,6 +248,73 @@ async function main() {
               })
               .onConflictDoNothing()
           }
+        }
+
+        for (const seed of SEED_ORDERS[demo.slug] ?? []) {
+          await tx
+            .insert(customers)
+            .values({
+              id: seed.customerId,
+              tenantId: demo.id,
+              businessId: demo.businessId,
+              name: seed.customerName,
+              phone: seed.customerPhone,
+            })
+            .onConflictDoNothing()
+
+          await tx
+            .insert(orders)
+            .values({
+              id: seed.id,
+              tenantId: demo.id,
+              businessId: demo.businessId,
+              customerId: seed.customerId,
+              number: seed.number,
+              vertical: demo.vertical,
+              kind: seed.kind,
+              status: seed.status,
+              channel: 'hatod',
+              subtotalCentavos: seed.subtotalCentavos,
+              deliveryFeeCentavos: seed.deliveryFeeCentavos,
+              totalCentavos: seed.totalCentavos,
+              contactName: seed.customerName,
+              contactPhone: seed.customerPhone,
+              address: seed.address,
+              scheduledAt: seed.scheduledAt,
+              intake: seed.intake,
+            })
+            .onConflictDoNothing()
+
+          await tx
+            .insert(orderLines)
+            .values(
+              seed.lines.map((line) => ({
+                id: line.id,
+                tenantId: demo.id,
+                orderId: seed.id,
+                itemId: line.itemId,
+                name: line.name,
+                unitPriceCentavos: line.unitPriceCentavos,
+                quantity: line.quantity,
+                lineTotalCentavos: line.unitPriceCentavos * line.quantity,
+              })),
+            )
+            .onConflictDoNothing()
+
+          await tx
+            .insert(orderEvents)
+            .values(
+              seed.events.map((event) => ({
+                id: event.id,
+                tenantId: demo.id,
+                orderId: seed.id,
+                fromStatus: event.from,
+                toStatus: event.to,
+                actorType: event.from === null ? ('customer' as const) : ('merchant' as const),
+                note: null,
+              })),
+            )
+            .onConflictDoNothing()
         }
       }
     })

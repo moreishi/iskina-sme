@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm'
+import { and, eq, inArray } from 'drizzle-orm'
 import type { Database } from '../client'
 import { withTenant } from '../context'
 import {
@@ -268,4 +268,24 @@ export class CategoryNotFoundError extends Error {
     super('Category does not belong to this business')
     this.name = 'CategoryNotFoundError'
   }
+}
+
+export async function getItemsByIds(
+  tenantId: string,
+  businessId: string,
+  ids: string[],
+): Promise<CatalogItem[]> {
+  if (ids.length === 0) return []
+  return withTenant(tenantId, (tx) =>
+    tx
+      .select()
+      .from(catalogItems)
+      .where(
+        and(
+          eq(catalogItems.tenantId, tenantId),
+          eq(catalogItems.businessId, businessId),
+          inArray(catalogItems.id, ids),
+        ),
+      ),
+  )
 }

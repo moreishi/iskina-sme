@@ -1,6 +1,7 @@
 import { sql } from 'drizzle-orm'
 import {
   boolean,
+  doublePrecision,
   index,
   integer,
   jsonb,
@@ -18,6 +19,23 @@ export const vertical = pgEnum('vertical', ['food', 'aircon', 'lpg'])
 export const membershipRole = pgEnum('membership_role', ['owner', 'manager', 'staff'])
 export const keyEnv = pgEnum('key_env', ['test', 'live'])
 export const auditActorType = pgEnum('audit_actor_type', ['user', 'api_key', 'system'])
+export const orderKind = pgEnum('order_kind', ['delivery', 'booking'])
+export const orderStatus = pgEnum('order_status', [
+  'PLACED',
+  'ACCEPTED',
+  'PREPARING',
+  'READY',
+  'OUT_FOR_DELIVERY',
+  'DELIVERED',
+  'SCHEDULED',
+  'IN_PROGRESS',
+  'COMPLETED',
+  'REJECTED',
+  'CANCELLED',
+  'EXPIRED',
+])
+export const orderChannel = pgEnum('order_channel', ['hatod', 'merchant', 'manual'])
+export const orderActor = pgEnum('order_actor', ['customer', 'merchant', 'rider', 'system'])
 
 const timestamps = {
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
@@ -100,6 +118,8 @@ export const businesses = pgTable(
     vertical: vertical('vertical').notNull(),
     status: businessStatus('status').default('active').notNull(),
     timezone: text('timezone').default('Asia/Manila').notNull(),
+    lat: doublePrecision('lat'),
+    lng: doublePrecision('lng'),
     /** Partial override of the vertical preset; null means use the preset. */
     verticalConfig: jsonb('vertical_config'),
     ...timestamps,
@@ -208,6 +228,114 @@ export const catalogItems = pgTable(
   ],
 )
 
+export const customers = pgTable(
+  'customers',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    businessId: uuid('business_id')
+      .notNull()
+      .references(() => businesses.id, { onDelete: 'cascade' }),
+    name: text('name'),
+    phone: text('phone').notNull(),
+    hatodUserId: text('hatod_user_id'),
+    ...timestamps,
+  },
+  (t) => [
+    uniqueIndex('customers_business_phone_uq').on(t.businessId, t.phone),
+    index('customers_tenant_idx').on(t.tenantId),
+  ],
+)
+
+export const orders = pgTable(
+  'orders',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    businessId: uuid('business_id')
+      .notNull()
+      .references(() => businesses.id, { onDelete: 'cascade' }),
+    customerId: uuid('customer_id').references(() => customers.id, { onDelete: 'set null' }),
+    number: text('number').notNull(),
+    vertical: vertical('vertical').notNull(),
+    kind: orderKind('kind').notNull(),
+    status: orderStatus('status').default('PLACED').notNull(),
+    channel: orderChannel('channel').notNull(),
+    subtotalCentavos: integer('subtotal_centavos').notNull(),
+    deliveryFeeCentavos: integer('delivery_fee_centavos').notNull(),
+    totalCentavos: integer('total_centavos').notNull(),
+    contactName: text('contact_name'),
+    contactPhone: text('contact_phone').notNull(),
+    address: text('address'),
+    lat: doublePrecision('lat'),
+    lng: doublePrecision('lng'),
+    scheduledAt: timestamp('scheduled_at', { withTimezone: true }),
+    notes: text('notes'),
+    intake: jsonb('intake').default({}).notNull(),
+    paymentMethod: text('payment_method').default('cash').notNull(),
+    cashReceivedAt: timestamp('cash_received_at', { withTimezone: true }),
+    idempotencyKey: text('idempotency_key'),
+    placedAt: timestamp('placed_at', { withTimezone: true }).defaultNow().notNull(),
+    completedAt: timestamp('completed_at', { withTimezone: true }),
+    ...timestamps,
+  },
+  (t) => [
+    uniqueIndex('orders_business_idempotency_uq').on(t.businessId, t.idempotencyKey),
+    uniqueIndex('orders_number_uq').on(t.number),
+    index('orders_tenant_idx').on(t.tenantId),
+    index('orders_business_status_idx').on(t.businessId, t.status),
+  ],
+)
+
+export const orderLines = pgTable(
+  'order_lines',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    orderId: uuid('order_id')
+      .notNull()
+      .references(() => orders.id, { onDelete: 'cascade' }),
+    itemId: uuid('item_id').references(() => catalogItems.id, { onDelete: 'set null' }),
+    name: text('name').notNull(),
+    unitPriceCentavos: integer('unit_price_centavos').notNull(),
+    quantity: integer('quantity').notNull(),
+    lineTotalCentavos: integer('line_total_centavos').notNull(),
+  },
+  (t) => [
+    index('order_lines_tenant_idx').on(t.tenantId),
+    index('order_lines_order_idx').on(t.orderId),
+  ],
+)
+
+export const orderEvents = pgTable(
+  'order_events',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    orderId: uuid('order_id')
+      .notNull()
+      .references(() => orders.id, { onDelete: 'cascade' }),
+    fromStatus: orderStatus('from_status'),
+    toStatus: orderStatus('to_status').notNull(),
+    actorType: orderActor('actor_type').notNull(),
+    actorId: text('actor_id'),
+    note: text('note'),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [
+    index('order_events_tenant_idx').on(t.tenantId),
+    index('order_events_order_idx').on(t.orderId, t.createdAt),
+  ],
+)
+
 export const auditLogs = pgTable(
   'audit_logs',
   {
@@ -237,4 +365,8 @@ export type Membership = typeof memberships.$inferSelect
 export type ApiKey = typeof apiKeys.$inferSelect
 export type CatalogCategory = typeof catalogCategories.$inferSelect
 export type CatalogItem = typeof catalogItems.$inferSelect
+export type Customer = typeof customers.$inferSelect
+export type Order = typeof orders.$inferSelect
+export type OrderLine = typeof orderLines.$inferSelect
+export type OrderEvent = typeof orderEvents.$inferSelect
 export type AuditLog = typeof auditLogs.$inferSelect

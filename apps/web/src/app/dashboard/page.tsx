@@ -69,12 +69,20 @@ export default async function DashboardPage() {
                 {membership.vertical ? VERTICAL_LABELS[membership.vertical] : 'Tenant-wide'}
               </p>
               {membership.businessId ? (
-                <Link
-                  href={`/dashboard/businesses/${membership.businessId}/catalog`}
-                  className="mt-4 inline-block rounded-lg border border-[var(--outline)] px-3 py-1.5 text-sm font-medium hover:border-[var(--primary)]"
-                >
-                  Manage catalog
-                </Link>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <Link
+                    href={`/dashboard/businesses/${membership.businessId}/orders`}
+                    className="inline-block rounded-lg bg-[var(--primary)] px-3 py-1.5 text-sm font-semibold text-[var(--on-primary)]"
+                  >
+                    Orders
+                  </Link>
+                  <Link
+                    href={`/dashboard/businesses/${membership.businessId}/catalog`}
+                    className="inline-block rounded-lg border border-[var(--outline)] px-3 py-1.5 text-sm font-medium hover:border-[var(--primary)]"
+                  >
+                    Catalog
+                  </Link>
+                </div>
               ) : null}
             </article>
           ))}

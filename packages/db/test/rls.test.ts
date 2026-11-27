@@ -18,6 +18,8 @@ const keyA = randomUUID()
 const keyB = randomUUID()
 const categoryA = randomUUID()
 const itemA = randomUUID()
+const customerA = randomUUID()
+const orderA = randomUUID()
 const hashA = `hash_a_${suffix}`
 const hashB = `hash_b_${suffix}`
 
@@ -94,6 +96,17 @@ beforeAll(async () => {
      values ($1, $2, $3, $4, 'Adobo', 12000)`,
     [itemA, tenantA, businessA, categoryA],
   )
+  await admin.query(
+    `insert into customers (id, tenant_id, business_id, name, phone)
+     values ($1, $2, $3, 'RLS Customer', '+639170009999')`,
+    [customerA, tenantA, businessA],
+  )
+  await admin.query(
+    `insert into orders (id, tenant_id, business_id, customer_id, number, vertical, kind, channel,
+       subtotal_centavos, delivery_fee_centavos, total_centavos, contact_phone)
+     values ($1, $2, $3, $4, $5, 'food', 'delivery', 'hatod', 12000, 0, 12000, '+639170009999')`,
+    [orderA, tenantA, businessA, customerA, `SME-RLS-${suffix}`],
+  )
 
   probe = new Pool({ connectionString: withCredentials(adminUrl, role, password) })
 })
@@ -101,6 +114,10 @@ beforeAll(async () => {
 afterAll(async () => {
   await probe?.end()
   if (admin) {
+    await admin.query(`delete from order_events where order_id = $1`, [orderA])
+    await admin.query(`delete from order_lines where order_id = $1`, [orderA])
+    await admin.query(`delete from orders where id = $1`, [orderA])
+    await admin.query(`delete from customers where id = $1`, [customerA])
     await admin.query(`delete from catalog_items where id = $1`, [itemA])
     await admin.query(`delete from catalog_categories where id = $1`, [categoryA])
     await admin.query(`delete from api_keys where id in ($1, $2)`, [keyA, keyB])
@@ -176,6 +193,17 @@ describe('row level security', () => {
       return result.rows as { id: string }[]
     })
     expect(rows.map((row) => row.id)).toEqual([itemA])
+  })
+
+  it('isolates orders by tenant', async () => {
+    const withoutContext = await probe.query('select id from orders')
+    expect(withoutContext.rows).toEqual([])
+
+    const rows = await inTenant(tenantA, async (client) => {
+      const result = await client.query('select id from orders')
+      return result.rows as { id: string }[]
+    })
+    expect(rows.map((row) => row.id)).toEqual([orderA])
   })
 
   it('blocks writes outside the tenant context', async () => {

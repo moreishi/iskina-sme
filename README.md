@@ -9,11 +9,11 @@ execution to its own dispatch.
 
 ## Status
 
-**M2 — catalog and vertical configs complete.** Owners sign in with OTP,
-onboarding creates a tenant + business + owner membership, HATOD channel keys
-are issued and revoked from the dashboard, and each business manages its catalog
-with vertical-specific defaults (food delivery, aircon booking, LPG refill).
-RLS is enforced through a non-superuser role in development and production.
+**M3 core — order and booking operations.** OTP auth, tenancy with RLS, catalog
+and vertical configs, channel API keys, and now the order lifecycle: server-side
+pricing, per-vertical state machines, HATOD channel quote/order intake with
+idempotency, cash confirmation, and the merchant order board (polling). SSE and
+push arrive with the merchant app.
 
 See [`AGENTS.md`](./AGENTS.md) for the boundary, rules and roadmap.
 

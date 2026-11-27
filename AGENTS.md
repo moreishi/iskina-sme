@@ -96,6 +96,9 @@ packages/
 - Merchant app: staff session (OTP delegated to `iskina-otp`).
 - Catalog: `/api/v1/catalog*`; owners and managers write, staff read. Prices are
   integer centavos and a category must belong to the same business as the item.
+- Orders: `/api/v1/channel/quotes` (`catalog:read`) and `/channel/orders`
+  (`orders:write`), plus `/api/v1/merchant/orders*` for the board. Totals are
+  computed server-side; placement is idempotent per business key.
 - Errors: `{ error: { code, message, requestId } }`.
 - Writes accept `Idempotency-Key`; webhooks are HMAC-signed and retried.
 - OpenAPI at `/api/openapi`.
@@ -122,9 +125,9 @@ HATOD channel lands.
 
 ## 9. Current milestone
 
-M2 shipped — catalog CRUD with tenant isolation, vertical presets, and the
-merchant catalog UI. Next: M3 order/booking state machines, board API, SSE and
-push.
+M3 core shipped — orders and bookings, server-side pricing, channel order intake
+with idempotency, and the merchant board (polling). Next: M3b analytics pipeline,
+then SSE/push with the merchant app.
 
 ## 10. Coolify
 
