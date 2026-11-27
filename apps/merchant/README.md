@@ -54,6 +54,18 @@ android/       Kotlin platform bridge + OrderAlertService
 
 ## Release builds
 
+Icons come from `assets/icon/`:
+
+- `icon.png` — full artwork, legacy launcher icon
+- `icon_foreground.png` — padded adaptive foreground
+- `play-store-512.png` — 512×512 store listing icon
+
+Regenerate after changing the artwork:
+
+```bash
+dart run flutter_launcher_icons
+```
+
 The API URL is compiled in:
 
 ```bash
