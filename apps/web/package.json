@@ -11,6 +11,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1178.0",
     "@iskina/contracts": "workspace:*",
     "@iskina/core": "workspace:*",
     "@iskina/db": "workspace:*",
@@ -18,6 +19,7 @@
     "next": "16.4.3",
     "react": "19.3.1",
     "react-dom": "19.3.1",
+    "sharp": "^0.35.5",
     "zod": "4.6.7"
   },
   "devDependencies": {

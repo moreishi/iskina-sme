@@ -3,6 +3,7 @@ node_modules/
 .turbo/
 dist/
 coverage/
+apps/web/public/uploads/
 *.tsbuildinfo
 .env
 .env.*

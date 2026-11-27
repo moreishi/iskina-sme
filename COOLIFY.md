@@ -95,7 +95,27 @@ database resource instead:
 3. Set `DATABASE_URL` in the `web` and `migrate` services to that role's
    connection string.
 
-## 6. Backups and updates
+## 6. Image uploads
+
+Catalog item photos are processed by the server (WebP, ≤1600px, EXIF stripped)
+and stored in an S3-compatible bucket. **Local disk is development-only** and is
+not available in the production image, so set:
+
+```dotenv
+S3_ENDPOINT=https://<account>.r2.cloudflarestorage.com
+S3_REGION=auto
+S3_BUCKET=iskina-sme
+S3_ACCESS_KEY_ID=...
+S3_SECRET_ACCESS_KEY=...
+S3_PUBLIC_BASE_URL=https://<public-bucket-or-cdn>
+UPLOAD_MAX_BYTES=5242880
+```
+
+The bucket (or its CDN domain) must be publicly readable; uploads happen from the
+server, so no browser CORS rule is needed. Without these variables the upload
+route returns `503 storage_unavailable` instead of writing ephemeral files.
+
+## 7. Backups and updates
 
 - Back up the `pgdata` volume (or the managed database) before upgrades.
 - Migrations are forward-only. A rollback of the app image is safe as long as
@@ -103,7 +123,7 @@ database resource instead:
 - Redeploying rebuilds only the changed layers; the dependency layer is cached
   on `package.json` / `pnpm-lock.yaml`.
 
-## 7. Local smoke test of the production stack
+## 8. Local smoke test of the production stack
 
 ```bash
 AUTH_SECRET=dev-only-secret APP_URL=http://localhost:3008 POSTGRES_PASSWORD=iskina \
@@ -114,7 +134,7 @@ AUTH_SECRET=dev-only-secret APP_URL=http://localhost:3008 POSTGRES_PASSWORD=iski
 Then `curl -fsS http://localhost:3008/api/health`. Tear down with `down -v` to
 remove the throwaway database.
 
-## 8. Troubleshooting
+## 9. Troubleshooting
 
 | Symptom                   | Check                                                                  |
 | ------------------------- | ---------------------------------------------------------------------- |

@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   outputFileTracingRoot: fileURLToPath(new URL('../..', import.meta.url)),
   transpilePackages: ['@iskina/contracts', '@iskina/core', '@iskina/db'],
-  serverExternalPackages: ['pg'],
+  serverExternalPackages: ['pg', 'sharp'],
 }
 
 export default nextConfig

@@ -270,6 +270,49 @@ export class CategoryNotFoundError extends Error {
   }
 }
 
+export async function getItemForTenant(
+  tenantId: string,
+  businessId: string,
+  itemId: string,
+): Promise<CatalogItem | null> {
+  return withTenant(tenantId, async (tx) => {
+    const rows = await tx
+      .select()
+      .from(catalogItems)
+      .where(
+        and(
+          eq(catalogItems.id, itemId),
+          eq(catalogItems.tenantId, tenantId),
+          eq(catalogItems.businessId, businessId),
+        ),
+      )
+      .limit(1)
+    return rows[0] ?? null
+  })
+}
+
+export async function setItemImage(
+  tenantId: string,
+  businessId: string,
+  itemId: string,
+  imageUrl: string | null,
+): Promise<CatalogItem | null> {
+  return withTenant(tenantId, async (tx) => {
+    const rows = await tx
+      .update(catalogItems)
+      .set({ imageUrl, updatedAt: new Date() })
+      .where(
+        and(
+          eq(catalogItems.id, itemId),
+          eq(catalogItems.tenantId, tenantId),
+          eq(catalogItems.businessId, businessId),
+        ),
+      )
+      .returning()
+    return rows[0] ?? null
+  })
+}
+
 export async function getItemsByIds(
   tenantId: string,
   businessId: string,

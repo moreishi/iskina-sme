@@ -9,6 +9,7 @@ interface Item {
   description: string | null
   priceCentavos: number
   unit: string
+  imageUrl: string | null
   available: boolean
   stockCount: number | null
 }
@@ -156,6 +157,27 @@ export function CatalogManager({
     )
   }
 
+  async function uploadImage(item: Item, file: File) {
+    const form = new FormData()
+    form.append('businessId', businessId)
+    form.append('file', file)
+    await run(() =>
+      fetch(`/api/v1/catalog/items/${item.id}/image`, {
+        method: 'POST',
+        body: form,
+      }),
+    )
+  }
+
+  async function removeImage(item: Item) {
+    if (!window.confirm(`Remove the photo for ${item.name}?`)) return
+    await run(() =>
+      fetch(`/api/v1/catalog/items/${item.id}/image?businessId=${encodeURIComponent(businessId)}`, {
+        method: 'DELETE',
+      }),
+    )
+  }
+
   async function removeCategory(category: Category) {
     if (
       !window.confirm(
@@ -245,6 +267,20 @@ export function CatalogManager({
         key={item.id}
         className="flex flex-wrap items-center gap-3 rounded-xl border border-[var(--outline)] px-3 py-2.5"
       >
+        <span className="size-11 shrink-0 overflow-hidden rounded-lg border border-[var(--outline)] bg-[var(--surface-muted)]">
+          {item.imageUrl ? (
+            <span
+              role="img"
+              aria-label={item.name}
+              className="block h-full w-full bg-cover bg-center"
+              style={{ backgroundImage: `url(${item.imageUrl})` }}
+            />
+          ) : (
+            <span className="grid h-full w-full place-items-center text-[10px] text-[var(--muted-text)]">
+              no img
+            </span>
+          )}
+        </span>
         <span className="flex-1 text-sm font-medium">{item.name}</span>
         <span className="font-mono text-sm">{peso.format(item.priceCentavos / 100)}</span>
         <span className="text-xs text-[var(--muted-text)]">/{item.unit}</span>
@@ -258,7 +294,30 @@ export function CatalogManager({
           {item.available ? 'available' : 'hidden'}
         </span>
         {canEdit ? (
-          <span className="flex gap-1.5">
+          <span className="flex flex-wrap gap-1.5">
+            <label className="cursor-pointer rounded border border-[var(--outline)] px-2 py-1 text-xs">
+              {item.imageUrl ? 'Replace photo' : 'Add photo'}
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="sr-only"
+                onChange={(event) => {
+                  const file = event.target.files?.[0]
+                  if (file) void uploadImage(item, file)
+                  event.target.value = ''
+                }}
+              />
+            </label>
+            {item.imageUrl ? (
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => void removeImage(item)}
+                className="rounded border border-[var(--outline)] px-2 py-1 text-xs"
+              >
+                Remove photo
+              </button>
+            ) : null}
             <button
               type="button"
               disabled={busy}

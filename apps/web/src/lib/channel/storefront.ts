@@ -32,6 +32,7 @@ export async function storefrontPayload(storefront: Storefront) {
     description: item.description,
     priceCentavos: item.priceCentavos,
     unit: item.unit,
+    imageUrl: item.imageUrl,
     metadata: item.metadata,
   })
 

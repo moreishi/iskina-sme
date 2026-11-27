@@ -116,6 +116,11 @@ packages/
 - Orders: `/api/v1/channel/quotes` (`catalog:read`) and `/channel/orders`
   (`orders:write`), plus `/api/v1/merchant/orders*` for the board. Totals are
   computed server-side; placement is idempotent per business key.
+- Catalog images: `POST /api/v1/catalog/items/:id/image` (multipart, owner or
+  manager). Magic bytes are checked, EXIF stripped, the long edge bounded to
+  1600px and encoded as WebP before storage. Production requires S3/R2; local
+  development writes to `apps/web/public/uploads`. Never accept SVG or trust the
+  client Content-Type.
 - Errors: `{ error: { code, message, requestId } }`.
 - Writes accept `Idempotency-Key`; webhooks are HMAC-signed and retried.
 - OpenAPI at `/api/openapi`.
