@@ -144,6 +144,9 @@ both      PLACED → REJECTED | CANCELLED | EXPIRED
 Only active businesses and available items appear. Order status changes are
 polled today; webhooks are not built.
 
+A human-readable reference is served at `/docs`; the machine-readable OpenAPI
+3.1 document is at `/api/openapi`.
+
 ## 10. Themes
 
 - Presets: `ferrari` (**Rosso**, default), `alibaba` (Ember), `ocean`, `forest`,

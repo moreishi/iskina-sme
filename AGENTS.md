@@ -124,6 +124,7 @@ packages/
 - Errors: `{ error: { code, message, requestId } }`.
 - Writes accept `Idempotency-Key`; webhooks are HMAC-signed and retried.
 - OpenAPI at `/api/openapi`.
+- Human-readable reference at `/docs`.
 - Versioning: `/api/v1`, additive changes only; a breaking change is `/api/v2`.
 
 ## 7. Themes

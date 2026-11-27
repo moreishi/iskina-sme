@@ -56,6 +56,9 @@ Check the service:
 curl -s http://localhost:3008/api/health
 ```
 
+API reference: <http://localhost:3008/docs> · OpenAPI JSON:
+<http://localhost:3008/api/openapi>.
+
 Quality gates (also run in CI):
 
 ```bash

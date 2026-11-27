@@ -56,6 +56,12 @@ export default async function HomePage() {
         </div>
         <div className="flex items-center gap-2 text-sm">
           <Link
+            href="/docs"
+            className="rounded-full border border-[var(--outline)] px-3 py-1 font-medium hover:border-[var(--primary)]"
+          >
+            API docs
+          </Link>
+          <Link
             href={accountHref}
             className="rounded-full border border-[var(--outline)] px-3 py-1 font-medium hover:border-[var(--primary)]"
           >
