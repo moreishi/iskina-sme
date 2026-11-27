@@ -51,3 +51,18 @@ android/       Kotlin platform bridge + OrderAlertService
 - Barcode/thermal printing is a stub returning `false` from `printReceipt`.
 - Tests cover the SSE decoder, order action map and theme mapping; no widget or
   integration tests yet.
+
+## Release builds
+
+The API URL is compiled in:
+
+```bash
+flutter build apk --release --dart-define=API_URL=https://sme.iskina.cc
+flutter build appbundle --release --dart-define=API_URL=https://sme.iskina.cc
+```
+
+Signing reads `android/key.properties` and `android/iskina-release.jks`. Both
+are gitignored; **back up the keystore and password** — losing them blocks Play
+updates. Without `key.properties` the build falls back to the debug key and is
+not publishable. Production API URLs must be HTTPS; only loopback/emulator hosts
+are allowed to use cleartext.
